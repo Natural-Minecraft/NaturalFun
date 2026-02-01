@@ -1,24 +1,12 @@
 package id.naturalsmp.naturalFun;
 
-import id.naturalsmp.naturalFun.bloodmoon.BloodmoonCommand;
-import id.naturalsmp.naturalFun.bloodmoon.BloodmoonListener;
-import id.naturalsmp.naturalFun.bloodmoon.BloodmoonManager;
-import id.naturalsmp.naturalFun.bloodmoon.LeaderboardManager;
-import id.naturalsmp.naturalFun.bloodmoon.SafezoneManager;
-import id.naturalsmp.naturalFun.bloodmoon.BloodmoonCurrencyManager;
-import id.naturalsmp.naturalFun.bloodmoon.BloodmoonShopManager;
-import id.naturalsmp.naturalFun.bloodmoon.BloodmoonShopGUI;
-import id.naturalsmp.naturalFun.bloodmoon.GiveBMCoinCommand;
-import id.naturalsmp.naturalFun.bloodmoon.BloodmoonShopCommand;
-import id.naturalsmp.naturalFun.bloodmoon.BMLeaderboardCommand;
-import id.naturalsmp.naturalFun.bloodmoon.BMEditItemCommand;
-import id.naturalsmp.naturalFun.bloodmoon.BloodmoonAdminGUI;
-import id.naturalsmp.naturalFun.bloodmoon.EditorInputListener;
+import id.naturalsmp.naturalFun.bloodmoon.*;
 import id.naturalsmp.naturalFun.fun.FunCommand;
 import id.naturalsmp.naturalFun.fun.FunListener;
 import id.naturalsmp.naturalFun.trader.TraderCommand;
 import id.naturalsmp.naturalFun.trader.TraderListener;
 import id.naturalsmp.naturalFun.trader.TraderManager;
+import id.naturalsmp.naturalFun.utils.ChatUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,6 +15,7 @@ import java.io.File;
 
 public final class NaturalFun extends JavaPlugin {
 
+    private static NaturalFun instance;
     private BloodmoonManager bloodmoonManager;
     private LeaderboardManager leaderboardManager;
     private TraderManager traderManager;
@@ -34,13 +23,14 @@ public final class NaturalFun extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        instance = this;
+
         // Config
         saveDefaultConfig();
         loadMessages();
 
         // --- Modules ---
 
-        // 1. Bloodmoon
         // 1. Bloodmoon
         SafezoneManager.init(this);
         bloodmoonManager = new BloodmoonManager(this);
@@ -78,7 +68,8 @@ public final class NaturalFun extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TraderListener(traderManager), this);
         getCommand("traderadmin").setExecutor(new TraderCommand(this, traderManager));
 
-        getLogger().info("NaturalFun has been enabled with all features!");
+        getLogger().info(ChatUtils.colorize(
+                "<gradient:#FFD700:#FFA500>NaturalFun</gradient> <white>has been enabled with all features!"));
     }
 
     @Override
@@ -101,5 +92,9 @@ public final class NaturalFun extends JavaPlugin {
         if (messagesConfig == null)
             loadMessages();
         return messagesConfig;
+    }
+
+    public static NaturalFun getInstance() {
+        return instance;
     }
 }

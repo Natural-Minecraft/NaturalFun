@@ -18,28 +18,29 @@ public class SafezoneManager {
         plugin = pl;
         loadSafezones();
     }
-    
+
     public static void loadSafezones() {
         safezones.clear();
-        if (plugin.getConfig().getBoolean("safezone.enabled", true) == false) return;
+        if (!plugin.getConfig().getBoolean("safezone.enabled", true))
+            return;
         List<String> list = plugin.getConfig().getStringList("safezone.zones");
         for (String s : list) {
             try {
-                // Format: world: x1,y1,z1,x2,y2,z2
                 String[] parts = s.split(":");
                 String worldName = parts[0].trim();
                 String[] coords = parts[1].trim().split(",");
-                
+
                 World world = Bukkit.getWorld(worldName);
-                if (world == null) continue;
-                
+                if (world == null)
+                    continue;
+
                 int x1 = Integer.parseInt(coords[0]);
                 int y1 = Integer.parseInt(coords[1]);
                 int z1 = Integer.parseInt(coords[2]);
                 int x2 = Integer.parseInt(coords[3]);
                 int y2 = Integer.parseInt(coords[4]);
                 int z2 = Integer.parseInt(coords[5]);
-                
+
                 safezones.add(new Cuboid(world, x1, y1, z1, x2, y2, z2));
             } catch (Exception e) {
                 plugin.getLogger().warning("Invalid safezone format: " + s);
@@ -71,10 +72,11 @@ public class SafezoneManager {
         }
 
         public boolean contains(Location loc) {
-            if (!loc.getWorld().equals(world)) return false;
+            if (!loc.getWorld().equals(world))
+                return false;
             return loc.getBlockX() >= xMin && loc.getBlockX() <= xMax &&
-                   loc.getBlockY() >= yMin && loc.getBlockY() <= yMax &&
-                   loc.getBlockZ() >= zMin && loc.getBlockZ() <= zMax;
+                    loc.getBlockY() >= yMin && loc.getBlockY() <= yMax &&
+                    loc.getBlockZ() >= zMin && loc.getBlockZ() <= zMax;
         }
     }
 }

@@ -32,7 +32,7 @@ public class LeaderboardManager {
             }
         }
         config = YamlConfiguration.loadConfiguration(file);
-        
+
         kills.clear();
         if (config.contains("kills")) {
             for (String uuid : config.getConfigurationSection("kills").getKeys(false)) {
@@ -55,7 +55,7 @@ public class LeaderboardManager {
     public void addKill(Player player) {
         String uuid = player.getUniqueId().toString();
         kills.put(uuid, kills.getOrDefault(uuid, 0) + 1);
-        save(); // Save on every kill or periodically? For safety, every kill is fine for small scale.
+        save();
     }
 
     public List<Map.Entry<String, Integer>> getTopKills(int limit) {

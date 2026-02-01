@@ -1,6 +1,6 @@
 package id.naturalsmp.naturalFun.bloodmoon;
 
-import id.naturalsmp.naturalFun.utils.ColorUtils;
+import id.naturalsmp.naturalFun.utils.ChatUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,16 +16,17 @@ public class BloodmoonShopCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
+            @NotNull String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ColorUtils.miniMessage("<red>Only players can use this command."));
+            sender.sendMessage(ChatUtils.toComponent("<red>Only players can use this command."));
             return true;
         }
         Player player = (Player) sender;
 
         if (args.length > 0 && args[0].equalsIgnoreCase("editor")) {
             if (!player.hasPermission("bloodmoon.admin")) {
-                player.sendMessage(ColorUtils.miniMessage("<red>No permission."));
+                player.sendMessage(ChatUtils.toComponent("<red>No permission."));
                 return true;
             }
             shopGUI.openEditor(player, 0);

@@ -1,6 +1,6 @@
 package id.naturalsmp.naturalFun.bloodmoon;
 
-import id.naturalsmp.naturalFun.utils.ColorUtils;
+import id.naturalsmp.naturalFun.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,13 +19,16 @@ public class BMLeaderboardCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        sender.sendMessage(ColorUtils.miniMessage("<gradient:#ADD8E6:#00008B><b>--- Bloodmoon Top Kills ---</b></gradient>"));
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
+            @NotNull String[] args) {
+        sender.sendMessage(
+                ChatUtils.toComponent("<gradient:#ADD8E6:#00008B><b>--- Bloodmoon Top Kills ---</b></gradient>"));
         int i = 1;
         for (Map.Entry<String, Integer> entry : leaderboardManager.getTopKills(10)) {
             String name = Bukkit.getOfflinePlayer(UUID.fromString(entry.getKey())).getName();
-            if (name == null) name = "Unknown";
-            sender.sendMessage(ColorUtils.miniMessage("<gray>" + i + ". " + name + ": <yellow>" + entry.getValue()));
+            if (name == null)
+                name = "Unknown";
+            sender.sendMessage(ChatUtils.toComponent("<gray>" + i + ". " + name + ": <yellow>" + entry.getValue()));
             i++;
         }
         return true;

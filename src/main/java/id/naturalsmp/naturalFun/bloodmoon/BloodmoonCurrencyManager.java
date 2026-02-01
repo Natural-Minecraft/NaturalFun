@@ -32,13 +32,14 @@ public class BloodmoonCurrencyManager {
             }
         }
         config = YamlConfiguration.loadConfiguration(file);
-        
+
         balances.clear();
         if (config.contains("balances")) {
             for (String uuidStr : config.getConfigurationSection("balances").getKeys(false)) {
                 try {
                     balances.put(UUID.fromString(uuidStr), config.getInt("balances." + uuidStr));
-                } catch (IllegalArgumentException ignored) {}
+                } catch (IllegalArgumentException ignored) {
+                }
             }
         }
     }
@@ -70,7 +71,7 @@ public class BloodmoonCurrencyManager {
     public void takeBalance(UUID playerUUID, int amount) {
         setBalance(playerUUID, getBalance(playerUUID) - amount);
     }
-    
+
     public boolean hasBalance(UUID playerUUID, int amount) {
         return getBalance(playerUUID) >= amount;
     }

@@ -1,7 +1,8 @@
 package id.naturalsmp.naturalFun.bloodmoon;
 
 import id.naturalsmp.naturalFun.NaturalFun;
-import id.naturalsmp.naturalFun.utils.ColorUtils;
+import id.naturalsmp.naturalFun.utils.ChatUtils;
+import id.naturalsmp.naturalFun.utils.GUIUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -31,8 +32,8 @@ public class BloodmoonAdminGUI implements Listener {
     }
 
     public void open(Player player) {
-        Inventory inv = Bukkit.createInventory(new AdminHolder(), 27,
-                ColorUtils.miniMessage("<gradient:#8B0000:#FF0000>Bloodmoon Admin</gradient>"));
+        Inventory inv = GUIUtils.createGUI(new AdminHolder(), 27,
+                "<gradient:#8B0000:#FF0000>Bloodmoon Admin</gradient>");
         fillInventory(inv);
         player.openInventory(inv);
     }
@@ -42,7 +43,7 @@ public class BloodmoonAdminGUI implements Listener {
         boolean isActive = bloodmoonManager.isBloodmoonActive();
         Material toggleIcon = isActive ? Material.REDSTONE_TORCH : Material.LEVER;
         String toggleName = isActive ? "<red>Stop Bloodmoon" : "<green>Start Bloodmoon";
-        ItemStack toggle = createItem(toggleIcon, toggleName,
+        ItemStack toggle = GUIUtils.createItem(toggleIcon, toggleName,
                 "<gray>Status: " + (isActive ? "<red>Active" : "<green>Inactive"),
                 "",
                 "<yellow>Click to toggle!");
@@ -50,7 +51,7 @@ public class BloodmoonAdminGUI implements Listener {
 
         // 2. Mob Settings (Elite Mobs) (Slot 13)
         boolean eliteEnabled = plugin.getConfig().getBoolean("bloodmoon.elite-mobs.enabled", true);
-        ItemStack mobs = createItem(Material.ZOMBIE_HEAD, "<red>Elite Mobs Settings",
+        ItemStack mobs = GUIUtils.createItem(Material.ZOMBIE_HEAD, "<red>Elite Mobs Settings",
                 "<gray>Enabled: " + (eliteEnabled ? "<green>True" : "<red>False"),
                 "<gray>Multiplier: <yellow>"
                         + plugin.getConfig().getDouble("bloodmoon.elite-mobs.health-multiplier", 3.0) + "x",
@@ -59,7 +60,7 @@ public class BloodmoonAdminGUI implements Listener {
         inv.setItem(13, mobs);
 
         // 3. Shop Editor (Slot 15)
-        ItemStack shop = createItem(Material.EMERALD, "<green>Shop Editor",
+        ItemStack shop = GUIUtils.createItem(Material.EMERALD, "<green>Shop Editor",
                 "<gray>Manage items in the",
                 "<gray>Bloodmoon Shop.",
                 "",
@@ -69,31 +70,14 @@ public class BloodmoonAdminGUI implements Listener {
         // 4. Shadow Assassin Spawn Rate (Slot 22)
         double currentChance = plugin.getConfig().getDouble("bloodmoon.shadow-assassin.chance", 0.01);
         int chancePercent = (int) (currentChance * 100);
-        ItemStack rate = createItem(Material.WITHER_SKELETON_SKULL, "<red>Shadow Assassin Rate",
+        ItemStack rate = GUIUtils.createItem(Material.WITHER_SKELETON_SKULL, "<red>Shadow Assassin Rate",
                 "<gray>Current Chance: <yellow>" + chancePercent + "%",
                 "",
                 "<green>Left-Click to +1%",
                 "<red>Right-Click to -1%");
         inv.setItem(22, rate);
 
-        // Fill background? Maybe simple glass
-        ItemStack filler = createItem(Material.BLACK_STAINED_GLASS_PANE, " ");
-        for (int i = 0; i < inv.getSize(); i++) {
-            if (inv.getItem(i) == null)
-                inv.setItem(i, filler);
-        }
-    }
-
-    private ItemStack createItem(Material mat, String name, String... lore) {
-        ItemStack item = new ItemStack(mat);
-        ItemMeta meta = item.getItemMeta();
-        meta.displayName(ColorUtils.miniMessage(name));
-        List<Component> l = new ArrayList<>();
-        for (String s : lore)
-            l.add(ColorUtils.miniMessage(s));
-        meta.lore(l);
-        item.setItemMeta(meta);
-        return item;
+        GUIUtils.fillEmpty(inv);
     }
 
     @EventHandler
@@ -135,9 +119,7 @@ public class BloodmoonAdminGUI implements Listener {
                     currentChance = 0.0;
             }
 
-            // Round to 2 decimal places to avoid floating point weirdness
             currentChance = Math.round(currentChance * 100.0) / 100.0;
-
             plugin.getConfig().set("bloodmoon.shadow-assassin.chance", currentChance);
             plugin.saveConfig();
             open(p); // Refresh

@@ -1,8 +1,7 @@
 package id.naturalsmp.naturalFun.bloodmoon;
 
 import id.naturalsmp.naturalFun.NaturalFun;
-import id.naturalsmp.naturalFun.utils.ColorUtils;
-import net.kyori.adventure.text.Component;
+import id.naturalsmp.naturalFun.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,7 +15,7 @@ public class BloodmoonManager {
     private final NaturalFun plugin;
     private BukkitRunnable bloodmoonTask;
     private long remainingTime = 0;
-    private final int BLOODMOON_DURATION = 20 * 60; // 20 minutes in seconds
+    private final int BLOODMOON_DURATION = 20 * 60;
 
     private FileConfiguration messagesConfig;
     private boolean isBloodmoonActive = false;
@@ -24,7 +23,6 @@ public class BloodmoonManager {
     public BloodmoonManager(NaturalFun plugin) {
         this.plugin = plugin;
         loadMessages();
-        // startScheduler(); // No longer polling world time constantly
     }
 
     private void loadMessages() {
@@ -48,14 +46,12 @@ public class BloodmoonManager {
             return;
 
         isBloodmoonActive = true;
-
-        // Setup World
-        world.setTime(14000); // Night
-        world.setGameRule(org.bukkit.GameRule.DO_DAYLIGHT_CYCLE, false); // Freeze time
+        world.setTime(14000);
+        world.setGameRule(org.bukkit.GameRule.DO_DAYLIGHT_CYCLE, false);
         world.setStorm(false);
 
         String msg = messagesConfig.getString("bloodmoon.start", "<red>Bloodmoon Started!");
-        Bukkit.broadcast(ColorUtils.miniMessage(msg));
+        Bukkit.broadcast(ChatUtils.toComponent(msg));
 
         remainingTime = BLOODMOON_DURATION;
 
@@ -63,16 +59,13 @@ public class BloodmoonManager {
             @Override
             public void run() {
                 remainingTime--;
-
-                // Keep time fixed at night just in case
                 world.setTime(14000);
-
                 if (remainingTime <= 0) {
                     stopBloodmoon(world);
                 }
             }
         };
-        bloodmoonTask.runTaskTimer(plugin, 20L, 20L); // Run every second
+        bloodmoonTask.runTaskTimer(plugin, 20L, 20L);
     }
 
     public void stopBloodmoon(World world) {
@@ -80,17 +73,15 @@ public class BloodmoonManager {
             return;
 
         isBloodmoonActive = false;
-
         if (bloodmoonTask != null && !bloodmoonTask.isCancelled()) {
             bloodmoonTask.cancel();
         }
 
-        // Restore World
-        world.setTime(0); // Day
-        world.setGameRule(org.bukkit.GameRule.DO_DAYLIGHT_CYCLE, true); // Defrost time
+        world.setTime(0);
+        world.setGameRule(org.bukkit.GameRule.DO_DAYLIGHT_CYCLE, true);
 
         String msg = messagesConfig.getString("bloodmoon.end", "<green>Bloodmoon Ended!");
-        Bukkit.broadcast(ColorUtils.miniMessage(msg));
+        Bukkit.broadcast(ChatUtils.toComponent(msg));
     }
 
     public String getFormattedTime() {

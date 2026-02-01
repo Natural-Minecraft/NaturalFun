@@ -33,7 +33,7 @@ public class BloodmoonShopManager {
             }
         }
         config = YamlConfiguration.loadConfiguration(file);
-        
+
         shopItems.clear();
         if (config.contains("items")) {
             ConfigurationSection itemsSection = config.getConfigurationSection("items");
@@ -50,7 +50,7 @@ public class BloodmoonShopManager {
     }
 
     public void save() {
-        config.set("items", null); // Clear old
+        config.set("items", null);
         for (ShopItem item : shopItems) {
             String path = "items." + item.getId();
             config.set(path + ".item", item.getItemStack());
@@ -74,15 +74,16 @@ public class BloodmoonShopManager {
         shopItems.add(new ShopItem(id, item, price, stock, rarity));
         save();
     }
-    
+
     public void removeShopItem(String id) {
         shopItems.removeIf(item -> item.getId().equals(id));
         save();
     }
-    
+
     public ShopItem getItemById(String id) {
         for (ShopItem item : shopItems) {
-            if (item.getId().equals(id)) return item;
+            if (item.getId().equals(id))
+                return item;
         }
         return null;
     }
@@ -102,14 +103,40 @@ public class BloodmoonShopManager {
             this.rarity = rarity;
         }
 
-        public String getId() { return id; }
-        public ItemStack getItemStack() { return itemStack; }
-        public int getPrice() { return price; }
-        public void setPrice(int price) { this.price = price; }
-        public int getStock() { return stock; }
-        public void setStock(int stock) { this.stock = stock; }
-        public void decreaseStock(int amount) { this.stock -= amount; }
-        public String getRarity() { return rarity; }
-        public void setRarity(String rarity) { this.rarity = rarity; }
+        public String getId() {
+            return id;
+        }
+
+        public ItemStack getItemStack() {
+            return itemStack;
+        }
+
+        public int getPrice() {
+            return price;
+        }
+
+        public void setPrice(int price) {
+            this.price = price;
+        }
+
+        public int getStock() {
+            return stock;
+        }
+
+        public void setStock(int stock) {
+            this.stock = stock;
+        }
+
+        public void decreaseStock(int amount) {
+            this.stock -= amount;
+        }
+
+        public String getRarity() {
+            return rarity;
+        }
+
+        public void setRarity(String rarity) {
+            this.rarity = rarity;
+        }
     }
 }

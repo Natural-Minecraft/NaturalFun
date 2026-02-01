@@ -1,7 +1,7 @@
 package id.naturalsmp.naturalFun.trader;
 
 import id.naturalsmp.naturalFun.NaturalFun;
-import id.naturalsmp.naturalFun.utils.ColorUtils;
+import id.naturalsmp.naturalFun.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
-import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.Registry;
 import org.bukkit.NamespacedKey;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class TraderManager {
 
@@ -73,20 +71,15 @@ public class TraderManager {
                     profession = Villager.Profession.FARMER;
 
                 List<MerchantRecipe> recipes = new ArrayList<>();
-                // Load trades logic could be complex, for now we will handle it simple or skip
-                // Ideally we load trades here
-
                 traders.put(id, new TraderData(id, name, loc, profession, recipes));
 
             } catch (Exception e) {
                 plugin.getLogger().warning("Failed to load trader " + id);
-                e.printStackTrace();
             }
         }
     }
 
     public void save() {
-        // Save logic to file
         try {
             config.save(file);
         } catch (IOException e) {
@@ -107,20 +100,12 @@ public class TraderManager {
         config.set(path + ".pitch", loc.getPitch());
 
         save();
-
-        // Spawn entity
         spawnTraderEntity(id, displayName, loc, profession);
-
-        load(); // Reload to memory
+        load();
     }
 
     public void removeTrader(String id) {
         if (traders.containsKey(id)) {
-            // Remove entity logic: Iterate near entities?
-            // Since we didn't store UUID, we might need to find by name or location
-            // For now, let's assume valid manual remove or use command logic to kill nearby
-
-            // Just remove from config
             config.set("traders." + id, null);
             save();
             traders.remove(id);
@@ -130,24 +115,19 @@ public class TraderManager {
     public void spawnTraderEntity(String id, String name, Location loc, Villager.Profession profession) {
         Villager v = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER);
         v.setProfession(profession);
-        v.setCustomName(ColorUtils.colorize(name));
+        v.setCustomName(ChatUtils.colorize(name));
         v.setCustomNameVisible(true);
         v.setAI(false);
         v.setInvulnerable(true);
         v.setCollidable(false);
-        // Add PersistentDataContainer to identify it as our trader?
-        // For simplicity, we match by Location or Name in Listener
     }
 
     public boolean isTrader(Villager v) {
-        // Simple check: exists in our map?
         for (TraderData data : traders.values()) {
-            if (data.location.getWorld().equals(v.getWorld()) &&
-                    data.location.distanceSquared(v.getLocation()) < 1.0) {
+            if (data.location.getWorld().equals(v.getWorld()) && data.location.distanceSquared(v.getLocation()) < 1.0) {
                 return true;
             }
-            // Or check name
-            if (v.getCustomName() != null && v.getCustomName().equals(ColorUtils.colorize(data.name))) {
+            if (v.getCustomName() != null && v.getCustomName().equals(ChatUtils.colorize(data.name))) {
                 return true;
             }
         }
@@ -155,23 +135,17 @@ public class TraderManager {
     }
 
     public void openTrade(Player p, Villager v) {
-        // Find which trader
         TraderData found = null;
         for (TraderData data : traders.values()) {
-            if (v.getCustomName() != null && v.getCustomName().equals(ColorUtils.colorize(data.name))) {
+            if (v.getCustomName() != null && v.getCustomName().equals(ChatUtils.colorize(data.name))) {
                 found = data;
                 break;
             }
         }
 
         if (found != null) {
-            Merchant merchant = Bukkit.createMerchant(ColorUtils.miniMessage(found.name));
-            // Add recipes
-            // For demo: Add a dummy trade depending on config
-            // In real impl, parse 'trades' section
-
+            Merchant merchant = Bukkit.createMerchant(ChatUtils.toComponent(found.name));
             List<MerchantRecipe> recipes = new ArrayList<>();
-            // Example: Diamond -> Dirt
             MerchantRecipe recipe = new MerchantRecipe(new ItemStack(Material.DIRT, 64), 999);
             recipe.addIngredient(new ItemStack(Material.DIAMOND, 1));
             recipes.add(recipe);
@@ -186,7 +160,7 @@ public class TraderManager {
         String name;
         Location location;
         Villager.Profession profession;
-        List<MerchantRecipe> recipes; // Cached
+        List<MerchantRecipe> recipes;
 
         public TraderData(String id, String name, Location location, Villager.Profession profession,
                 List<MerchantRecipe> recipes) {

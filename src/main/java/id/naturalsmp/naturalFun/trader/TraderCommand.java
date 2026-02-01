@@ -1,7 +1,7 @@
 package id.naturalsmp.naturalFun.trader;
 
 import id.naturalsmp.naturalFun.NaturalFun;
-import id.naturalsmp.naturalFun.utils.ColorUtils;
+import id.naturalsmp.naturalFun.utils.ChatUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,47 +20,53 @@ public class TraderCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
+            @NotNull String[] args) {
         if (!sender.hasPermission("naturalfun.admin")) {
-            sender.sendMessage("No permission.");
+            sender.sendMessage(ChatUtils.toComponent("<red>No permission."));
             return true;
         }
-        
+
         if (args.length < 1) {
-            sender.sendMessage("Usage: /traderadmin <create|remove|reload> ...");
+            sender.sendMessage(ChatUtils.toComponent("<red>Usage: /traderadmin <create|remove|reload> ..."));
             return true;
         }
-        
+
         if (args[0].equalsIgnoreCase("reload")) {
             manager.load();
-            sender.sendMessage(ColorUtils.miniMessage(plugin.getMessagesConfig().getString("trader.reloaded")));
+            String msg = plugin.getMessagesConfig().getString("trader.reloaded", "<green>Traders reloaded!");
+            sender.sendMessage(ChatUtils.toComponent(msg));
             return true;
         }
-        
+
         if (sender instanceof Player) {
             Player p = (Player) sender;
             if (args[0].equalsIgnoreCase("create")) {
                 if (args.length < 3) {
-                    p.sendMessage("Usage: /traderadmin create <id> <name>");
+                    p.sendMessage(ChatUtils.toComponent("<red>Usage: /traderadmin create <id> <name>"));
                     return true;
                 }
                 String id = args[1];
-                String name = args[2].replace("_", " "); // Support spaces via underscore
-                
+                String name = args[2].replace("_", " ");
+
                 manager.createTrader(id, name, p.getLocation(), Villager.Profession.FARMER);
-                p.sendMessage(ColorUtils.miniMessage(plugin.getMessagesConfig().getString("trader.created").replace("%id%", id)));
-                
+                String msg = plugin.getMessagesConfig().getString("trader.created", "<green>Trader created: %id%")
+                        .replace("%id%", id);
+                p.sendMessage(ChatUtils.toComponent(msg));
+
             } else if (args[0].equalsIgnoreCase("remove")) {
                 if (args.length < 2) {
-                    p.sendMessage("Usage: /traderadmin remove <id>");
+                    p.sendMessage(ChatUtils.toComponent("<red>Usage: /traderadmin remove <id>"));
                     return true;
                 }
                 String id = args[1];
                 manager.removeTrader(id);
-                p.sendMessage(ColorUtils.miniMessage(plugin.getMessagesConfig().getString("trader.removed").replace("%id%", id)));
+                String msg = plugin.getMessagesConfig().getString("trader.removed", "<red>Trader removed: %id%")
+                        .replace("%id%", id);
+                p.sendMessage(ChatUtils.toComponent(msg));
             }
         }
-        
+
         return true;
     }
 }

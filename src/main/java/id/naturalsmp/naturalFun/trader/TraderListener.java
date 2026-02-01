@@ -25,7 +25,7 @@ public class TraderListener implements Listener {
             }
         }
     }
-    
+
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
         if (event.getEntityType() == EntityType.VILLAGER) {

@@ -1,7 +1,7 @@
 package id.naturalsmp.naturalFun.bloodmoon;
 
 import id.naturalsmp.naturalFun.NaturalFun;
-import id.naturalsmp.naturalFun.utils.ColorUtils;
+import id.naturalsmp.naturalFun.utils.ChatUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,7 +14,6 @@ import java.util.UUID;
 
 public class BloodmoonCommand implements CommandExecutor {
 
-    private final NaturalFun plugin;
     private final BloodmoonManager bloodmoonManager;
     private final LeaderboardManager leaderboardManager;
     private final BloodmoonAdminGUI adminGUI;
@@ -24,7 +23,6 @@ public class BloodmoonCommand implements CommandExecutor {
         this.bloodmoonManager = bloodmoonManager;
         this.leaderboardManager = leaderboardManager;
         this.adminGUI = adminGUI;
-        this.plugin = NaturalFun.getPlugin(NaturalFun.class);
     }
 
     @Override
@@ -36,17 +34,14 @@ public class BloodmoonCommand implements CommandExecutor {
                 return true;
             }
 
-            // Show status
             if (bloodmoonManager.isBloodmoonActive()) {
-                sender.sendMessage(ColorUtils.miniMessage(
+                sender.sendMessage(ChatUtils.toComponent(
                         "<red>Bloodmoon is currently ACTIVE! Time left: " + bloodmoonManager.getFormattedTime()));
             } else {
-                sender.sendMessage(ColorUtils.miniMessage("<green>Bloodmoon is inactive."));
+                sender.sendMessage(ChatUtils.toComponent("<green>Bloodmoon is inactive."));
             }
             return true;
         }
-
-        // ... Keep existing subcommands (start/stop) as fallback or for console ...
 
         switch (args[0].toLowerCase()) {
             case "start":
@@ -68,15 +63,15 @@ public class BloodmoonCommand implements CommandExecutor {
                 }
                 break;
             case "top":
-                sender.sendMessage(ColorUtils
-                        .miniMessage("<gradient:#ADD8E6:#00008B><b>--- Bloodmoon Top Kills ---</b></gradient>"));
+                sender.sendMessage(ChatUtils
+                        .toComponent("<gradient:#ADD8E6:#00008B><b>--- Bloodmoon Top Kills ---</b></gradient>"));
                 int i = 1;
                 for (Map.Entry<String, Integer> entry : leaderboardManager.getTopKills(10)) {
                     String name = Bukkit.getOfflinePlayer(UUID.fromString(entry.getKey())).getName();
                     if (name == null)
                         name = "Unknown";
                     sender.sendMessage(
-                            ColorUtils.miniMessage("<gray>" + i + ". " + name + ": <yellow>" + entry.getValue()));
+                            ChatUtils.toComponent("<gray>" + i + ". " + name + ": <yellow>" + entry.getValue()));
                     i++;
                 }
                 break;
