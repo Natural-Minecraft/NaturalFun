@@ -1,5 +1,6 @@
 package id.naturalsmp.naturalFun.bloodmoon;
 
+import id.naturalsmp.naturalFun.NaturalFun;
 import id.naturalsmp.naturalFun.utils.ColorUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
