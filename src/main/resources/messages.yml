@@ -1,0 +1,20 @@
+bloodmoon:
+  start: "<gradient:#00008B:#ADD8E6><b>BLOODMOON TELAH BANGKIT!</b></gradient>\n<gray>Berhati-hatilah, monster menjadi lebih ganas!</gray>"
+  end: "<gradient:#ADD8E6:#00008B><b>BLOODMOON TELAH BERAKHIR!</b></gradient>\n<green>Matahari terbit, dunia kembali aman.</green>"
+  shadow-assassin-spawn: "<red>⚠</red> <gradient:#000000:#8B0000>Shadow Assassin telah muncul di dekatmu!</gradient>"
+  command-blocked: "<red>✖</red> <gradient:#FF0000:#8B0000>Kamu tidak bisa menggunakan perintah ini saat Bloodmoon!</gradient>"
+  safezone-enter: "<green>✔</green> <gradient:#ADD8E6:#00008B>Kamu memasuki Safezone.</gradient>"
+  safezone-leave: "<red>⚠</red> <gradient:#00008B:#ADD8E6>Kamu meninggalkan Safezone!</gradient>"
+  coin-drop: "<gold>✨</gold> <gradient:#FFFF00:#FFA500>Kamu mendapatkan Bloodmoon Coin!</gradient>"
+
+fun:
+  gg: "<gradient:#00FF00:#00AA00>GG!</gradient> <gray>%player% mengucapkan Good Game!</gray>"
+  noob: "<gradient:#FF0000:#AA0000>NOOB!</gradient> <gray>%player% merasa seperti pemula.</gray>"
+  cooldown: "<red>Tunggu %time% detik lagi!</red>"
+  warden-kill: "<gradient:#00AAAA:#00FFFF><b>WARDEN SLAIN!</b></gradient> <white>%player% telah membunuh Warden!</white>"
+  
+trader:
+  created: "<green>Trader %id% berhasil dibuat.</green>"
+  removed: "<green>Trader %id% berhasil dihapus.</green>"
+  not-found: "<red>Trader tidak ditemukan.</red>"
+  reloaded: "<green>Data Trader berhasil direload.</green>"

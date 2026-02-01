@@ -1,0 +1,39 @@
+bloodmoon:
+  interval: 10 # Days between Bloodmoons
+  mob-damage-multiplier: 3.0
+  
+  blocked-commands:
+    - "/home"
+    - "/spawn"
+    - "/warp"
+    - "/tpa"
+    - "/tpaccept"
+    
+  shadow-assassin:
+    chance: 0.01 # 1% chance for a mob to be a Shadow Assassin
+    name: "&#00008BShadow Assassin" 
+    health: 100.0
+    damage: 20.0 # 20 = 10 hearts
+    equipment:
+      main-hand: NETHERITE_SWORD
+      
+  coins:
+    name: "&#ADD8E6Bloodmoon Coin"
+    material: GOLD_NUGGET
+    custom-model-data: 0 # Set to 0 to disable
+    chance: 1.0 # Chance to drop from Shadow Assassin (0.0 - 1.0)
+    
+safezone:
+  enabled: true
+  # List of safezones. Format: world_name: x1,y1,z1,x2,y2,z2
+  zones:
+    - "world: 0,60,0,10,100,10"
+
+fun:
+  warden-xp: 500 # XP amount
+  commands:
+    cooldown: 30 # Seconds
+    
+trader:
+  # General trader settings if any
+  enabled: true

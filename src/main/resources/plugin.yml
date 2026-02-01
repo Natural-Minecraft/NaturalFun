@@ -1,0 +1,31 @@
+name: NaturalFun
+version: '1.0-SNAPSHOT'
+main: id.naturalsmp.naturalFun.NaturalFun
+api-version: '1.21'
+commands:
+  bloodmoon:
+    description: Bloodmoon admin command
+    permission: bloodmoon.admin
+  gg:
+    description: Say GG
+  noob:
+    description: Say Noob
+  traderadmin:
+    description: Manage NPC Traders
+    permission: naturalfun.admin
+  givebmcoin:
+    description: Give Bloodmoon Coins to a player
+    permission: bloodmoon.admin
+  bmshop:
+    description: Open the Bloodmoon Shop or Editor
+  bmleaderboard:
+    description: View Bloodmoon Kill Leaderboard
+  bmsetprice:
+    description: Set price of held item for shop
+    permission: bloodmoon.admin
+  bmsetstock:
+    description: Set stock of held item for shop
+    permission: bloodmoon.admin
+  bmsetrarity:
+    description: Set rarity of held item for shop
+    permission: bloodmoon.admin

@@ -1,0 +1,11 @@
+traders:
+  # Example storage format
+  # shop_id:
+  #   name: "Display Name"
+  #   location: {world: world, x: 0, y: 0, z: 0, yaw: 0, pitch: 0}
+  #   profession: FARMER
+  #   trades:
+  #     - item1: MATERIAL:AMOUNT
+  #       item2: MATERIAL:AMOUNT (optional)
+  #       result: MATERIAL:AMOUNT
+  #       max-uses: 999
