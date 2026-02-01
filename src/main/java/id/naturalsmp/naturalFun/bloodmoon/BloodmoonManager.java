@@ -18,6 +18,9 @@ public class BloodmoonManager {
     private long remainingTime = 0;
     private final int BLOODMOON_DURATION = 20 * 60; // 20 minutes in seconds
 
+    private FileConfiguration messagesConfig;
+    private boolean isBloodmoonActive = false;
+
     public BloodmoonManager(NaturalFun plugin) {
         this.plugin = plugin;
         loadMessages();

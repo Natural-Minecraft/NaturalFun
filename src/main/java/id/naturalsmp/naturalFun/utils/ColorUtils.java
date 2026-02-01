@@ -2,6 +2,7 @@ package id.naturalsmp.naturalFun.utils;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.ChatColor;
 
 import java.util.regex.Matcher;
@@ -28,5 +29,9 @@ public class ColorUtils {
     // Modern Paper uses MiniMessage
     public static Component miniMessage(String message) {
         return MiniMessage.miniMessage().deserialize(message);
+    }
+
+    public static String serialize(Component component) {
+        return PlainTextComponentSerializer.plainText().serialize(component);
     }
 }

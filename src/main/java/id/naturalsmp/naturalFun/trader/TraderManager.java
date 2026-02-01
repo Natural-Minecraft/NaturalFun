@@ -14,7 +14,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
+import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.Registry;
+import org.bukkit.NamespacedKey;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,17 +45,19 @@ public class TraderManager {
             plugin.saveResource("traders.yml", false);
         }
         config = YamlConfiguration.loadConfiguration(file);
-        
+
         traders.clear();
         ConfigurationSection section = config.getConfigurationSection("traders");
-        if (section == null) return;
-        
+        if (section == null)
+            return;
+
         for (String id : section.getKeys(false)) {
             try {
                 String name = section.getString(id + ".name", "Trader");
                 ConfigurationSection locSec = section.getConfigurationSection(id + ".location");
-                if (locSec == null) continue;
-                
+                if (locSec == null)
+                    continue;
+
                 World world = Bukkit.getWorld(locSec.getString("world"));
                 double x = locSec.getDouble("x");
                 double y = locSec.getDouble("y");
@@ -60,23 +65,26 @@ public class TraderManager {
                 float yaw = (float) locSec.getDouble("yaw");
                 float pitch = (float) locSec.getDouble("pitch");
                 Location loc = new Location(world, x, y, z, yaw, pitch);
-                
+
                 String professionStr = section.getString(id + ".profession", "FARMER");
-                Villager.Profession profession = Villager.Profession.valueOf(professionStr.toUpperCase());
-                
+                Villager.Profession profession = Registry.VILLAGER_PROFESSION
+                        .get(NamespacedKey.minecraft(professionStr.toLowerCase()));
+                if (profession == null)
+                    profession = Villager.Profession.FARMER;
+
                 List<MerchantRecipe> recipes = new ArrayList<>();
                 // Load trades logic could be complex, for now we will handle it simple or skip
                 // Ideally we load trades here
-                
+
                 traders.put(id, new TraderData(id, name, loc, profession, recipes));
-                
+
             } catch (Exception e) {
                 plugin.getLogger().warning("Failed to load trader " + id);
                 e.printStackTrace();
             }
         }
     }
-    
+
     public void save() {
         // Save logic to file
         try {
@@ -88,8 +96,8 @@ public class TraderManager {
 
     public void createTrader(String id, String displayName, Location loc, Villager.Profession profession) {
         config.set("traders." + id + ".name", displayName);
-        config.set("traders." + id + ".profession", profession.name());
-        
+        config.set("traders." + id + ".profession", profession.getKey().getKey().toUpperCase());
+
         String path = "traders." + id + ".location";
         config.set(path + ".world", loc.getWorld().getName());
         config.set(path + ".x", loc.getX());
@@ -97,12 +105,12 @@ public class TraderManager {
         config.set(path + ".z", loc.getZ());
         config.set(path + ".yaw", loc.getYaw());
         config.set(path + ".pitch", loc.getPitch());
-        
+
         save();
-        
+
         // Spawn entity
         spawnTraderEntity(id, displayName, loc, profession);
-        
+
         load(); // Reload to memory
     }
 
@@ -111,7 +119,7 @@ public class TraderManager {
             // Remove entity logic: Iterate near entities?
             // Since we didn't store UUID, we might need to find by name or location
             // For now, let's assume valid manual remove or use command logic to kill nearby
-            
+
             // Just remove from config
             config.set("traders." + id, null);
             save();
@@ -130,44 +138,44 @@ public class TraderManager {
         // Add PersistentDataContainer to identify it as our trader?
         // For simplicity, we match by Location or Name in Listener
     }
-    
+
     public boolean isTrader(Villager v) {
         // Simple check: exists in our map?
-         for (TraderData data : traders.values()) {
-             if (data.location.getWorld().equals(v.getWorld()) && 
-                 data.location.distanceSquared(v.getLocation()) < 1.0) {
-                 return true;
-             }
-             // Or check name
-             if (v.getCustomName() != null && v.getCustomName().equals(ColorUtils.colorize(data.name))) {
-                 return true;
-             }
-         }
-         return false;
+        for (TraderData data : traders.values()) {
+            if (data.location.getWorld().equals(v.getWorld()) &&
+                    data.location.distanceSquared(v.getLocation()) < 1.0) {
+                return true;
+            }
+            // Or check name
+            if (v.getCustomName() != null && v.getCustomName().equals(ColorUtils.colorize(data.name))) {
+                return true;
+            }
+        }
+        return false;
     }
-    
+
     public void openTrade(Player p, Villager v) {
         // Find which trader
         TraderData found = null;
         for (TraderData data : traders.values()) {
-             if (v.getCustomName() != null && v.getCustomName().equals(ColorUtils.colorize(data.name))) {
-                 found = data;
-                 break;
-             }
+            if (v.getCustomName() != null && v.getCustomName().equals(ColorUtils.colorize(data.name))) {
+                found = data;
+                break;
+            }
         }
-        
+
         if (found != null) {
             Merchant merchant = Bukkit.createMerchant(ColorUtils.miniMessage(found.name));
             // Add recipes
             // For demo: Add a dummy trade depending on config
             // In real impl, parse 'trades' section
-            
+
             List<MerchantRecipe> recipes = new ArrayList<>();
             // Example: Diamond -> Dirt
             MerchantRecipe recipe = new MerchantRecipe(new ItemStack(Material.DIRT, 64), 999);
             recipe.addIngredient(new ItemStack(Material.DIAMOND, 1));
             recipes.add(recipe);
-            
+
             merchant.setRecipes(recipes);
             p.openMerchant(merchant, true);
         }
@@ -179,8 +187,9 @@ public class TraderManager {
         Location location;
         Villager.Profession profession;
         List<MerchantRecipe> recipes; // Cached
-        
-        public TraderData(String id, String name, Location location, Villager.Profession profession, List<MerchantRecipe> recipes) {
+
+        public TraderData(String id, String name, Location location, Villager.Profession profession,
+                List<MerchantRecipe> recipes) {
             this.id = id;
             this.name = name;
             this.location = location;
