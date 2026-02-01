@@ -14,13 +14,14 @@ import java.io.File;
 public class BloodmoonManager {
 
     private final NaturalFun plugin;
-    private boolean isBloodmoonActive = false;
-    private FileConfiguration messagesConfig;
+    private BukkitRunnable bloodmoonTask;
+    private long remainingTime = 0;
+    private final int BLOODMOON_DURATION = 20 * 60; // 20 minutes in seconds
 
     public BloodmoonManager(NaturalFun plugin) {
         this.plugin = plugin;
         loadMessages();
-        startScheduler();
+        // startScheduler(); // No longer polling world time constantly
     }
 
     private void loadMessages() {
@@ -35,58 +36,66 @@ public class BloodmoonManager {
         return isBloodmoonActive;
     }
 
-    private void startScheduler() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                checkWorldTime();
-            }
-        }.runTaskTimer(plugin, 100L, 100L); // Check every 5 seconds
-    }
-
-    private void checkWorldTime() {
-        World world = Bukkit.getWorlds().get(0); // Assuming main world
-        long time = world.getTime();
-        long fullTime = world.getFullTime();
-        long days = fullTime / 24000;
-
-        int interval = plugin.getConfig().getInt("bloodmoon.interval", 10);
-
-        if (days > 0 && days % interval == 0) {
-            // It is a bloodmoon day
-            if (time >= 13000 && time <= 23000) {
-                if (!isBloodmoonActive) {
-                    startBloodmoon(world);
-                }
-            } else {
-                if (isBloodmoonActive) {
-                    stopBloodmoon(world);
-                }
-            }
-        } else {
-            if (isBloodmoonActive) {
-                stopBloodmoon(world);
-            }
-        }
+    public long getRemainingTime() {
+        return remainingTime;
     }
 
     public void startBloodmoon(World world) {
+        if (isBloodmoonActive)
+            return;
+
         isBloodmoonActive = true;
-        world.setTime(13000); // Set to start of night
-        world.setStorm(false); // Maybe clear weather? Or make it stormy? User didn't specify, but clear night is better for visibility.
-        
+
+        // Setup World
+        world.setTime(14000); // Night
+        world.setGameRule(org.bukkit.GameRule.DO_DAYLIGHT_CYCLE, false); // Freeze time
+        world.setStorm(false);
+
         String msg = messagesConfig.getString("bloodmoon.start", "<red>Bloodmoon Started!");
         Bukkit.broadcast(ColorUtils.miniMessage(msg));
+
+        remainingTime = BLOODMOON_DURATION;
+
+        bloodmoonTask = new BukkitRunnable() {
+            @Override
+            public void run() {
+                remainingTime--;
+
+                // Keep time fixed at night just in case
+                world.setTime(14000);
+
+                if (remainingTime <= 0) {
+                    stopBloodmoon(world);
+                }
+            }
+        };
+        bloodmoonTask.runTaskTimer(plugin, 20L, 20L); // Run every second
     }
 
     public void stopBloodmoon(World world) {
+        if (!isBloodmoonActive)
+            return;
+
         isBloodmoonActive = false;
-        world.setTime(0); // Set to day
-        
+
+        if (bloodmoonTask != null && !bloodmoonTask.isCancelled()) {
+            bloodmoonTask.cancel();
+        }
+
+        // Restore World
+        world.setTime(0); // Day
+        world.setGameRule(org.bukkit.GameRule.DO_DAYLIGHT_CYCLE, true); // Defrost time
+
         String msg = messagesConfig.getString("bloodmoon.end", "<green>Bloodmoon Ended!");
         Bukkit.broadcast(ColorUtils.miniMessage(msg));
     }
-    
+
+    public String getFormattedTime() {
+        long min = remainingTime / 60;
+        long sec = remainingTime % 60;
+        return String.format("%02d:%02d", min, sec);
+    }
+
     public FileConfiguration getMessages() {
         return messagesConfig;
     }

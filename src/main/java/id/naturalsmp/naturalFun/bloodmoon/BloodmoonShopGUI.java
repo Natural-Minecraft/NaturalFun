@@ -29,13 +29,15 @@ public class BloodmoonShopGUI implements Listener {
     }
 
     public void openShop(Player player, int page) {
-        Inventory inv = Bukkit.createInventory(new ShopHolder(false, page), 54, ColorUtils.miniMessage("<gradient:#00008B:#ADD8E6>Bloodmoon Shop</gradient>"));
+        Inventory inv = Bukkit.createInventory(new ShopHolder(false, page), 54,
+                ColorUtils.miniMessage("<gradient:#00008B:#ADD8E6>Bloodmoon Shop</gradient>"));
         fillInventory(inv, page, false);
         player.openInventory(inv);
     }
 
     public void openEditor(Player player, int page) {
-        Inventory inv = Bukkit.createInventory(new ShopHolder(true, page), 54, ColorUtils.miniMessage("<gradient:#8B0000:#FF4500>Shop Editor</gradient>"));
+        Inventory inv = Bukkit.createInventory(new ShopHolder(true, page), 54,
+                ColorUtils.miniMessage("<gradient:#8B0000:#FF4500>Shop Editor</gradient>"));
         fillInventory(inv, page, true);
         player.openInventory(inv);
     }
@@ -51,19 +53,20 @@ public class BloodmoonShopGUI implements Listener {
             ItemMeta meta = displayItem.getItemMeta();
             if (meta != null) {
                 List<Component> lore = meta.hasLore() ? meta.lore() : new ArrayList<>();
-                if (lore == null) lore = new ArrayList<>();
+                if (lore == null)
+                    lore = new ArrayList<>();
 
                 lore.add(Component.text(""));
                 lore.add(ColorUtils.miniMessage("<gray>Price: <yellow>" + item.getPrice() + " Coins"));
                 lore.add(ColorUtils.miniMessage("<gray>Stock: <yellow>" + item.getStock()));
                 lore.add(ColorUtils.miniMessage("<gray>Rarity: <aqua>" + item.getRarity()));
                 lore.add(Component.text(""));
-                
+
                 if (isEditor) {
-                     lore.add(ColorUtils.miniMessage("<red>Right-Click to Delete"));
-                     lore.add(ColorUtils.miniMessage("<gray>ID: " + item.getId()));
+                    lore.add(ColorUtils.miniMessage("<red>Right-Click to Delete"));
+                    lore.add(ColorUtils.miniMessage("<gray>ID: " + item.getId()));
                 } else {
-                     lore.add(ColorUtils.miniMessage("<yellow>Click to buy!"));
+                    lore.add(ColorUtils.miniMessage("<yellow>Click to buy!"));
                 }
 
                 meta.lore(lore);
@@ -88,7 +91,7 @@ public class BloodmoonShopGUI implements Listener {
             next.setItemMeta(meta);
             inv.setItem(53, next);
         }
-        
+
         // Editor Add Button
         if (isEditor) {
             ItemStack addItem = new ItemStack(Material.EMERALD_BLOCK);
@@ -104,130 +107,175 @@ public class BloodmoonShopGUI implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
+        if (!(event.getWhoClicked() instanceof Player))
+            return;
         Player player = (Player) event.getWhoClicked();
         Inventory inv = event.getInventory();
-        
-        if (!(inv.getHolder() instanceof ShopHolder)) return;
+
+        if (!(inv.getHolder() instanceof ShopHolder))
+            return;
         ShopHolder holder = (ShopHolder) inv.getHolder();
-        
+
         event.setCancelled(true);
-        
+
         int slot = event.getRawSlot();
-        if (slot > 53) return; // Clicked in player inventory
+        if (slot > 53)
+            return; // Clicked in player inventory
 
         // Navigation
         if (slot == 45) { // Previous
-             if (holder.page > 0) {
-                 if (holder.isEditor) openEditor(player, holder.page - 1);
-                 else openShop(player, holder.page - 1);
-             }
-             return;
+            if (holder.page > 0) {
+                if (holder.isEditor)
+                    openEditor(player, holder.page - 1);
+                else
+                    openShop(player, holder.page - 1);
+            }
+            return;
         }
         if (slot == 53) { // Next
-             // Logic to check if there is a next page?
-             // We can just rely on the button being there
-             if (inv.getItem(53) != null) {
-                 if (holder.isEditor) openEditor(player, holder.page + 1);
-                 else openShop(player, holder.page + 1);
-             }
-             return;
+            // Logic to check if there is a next page?
+            // We can just rely on the button being there
+            if (inv.getItem(53) != null) {
+                if (holder.isEditor)
+                    openEditor(player, holder.page + 1);
+                else
+                    openShop(player, holder.page + 1);
+            }
+            return;
         }
-        
+
         // Editor Actions
         if (holder.isEditor) {
-            if (slot == 49) { // Add Item
+            // Add Item (Click Emerald Block)
+            if (slot == 49) {
                 ItemStack hand = player.getInventory().getItemInMainHand();
                 if (hand == null || hand.getType().isAir()) {
                     player.sendMessage(ColorUtils.miniMessage("<red>You must hold an item to add it."));
                     return;
                 }
-                
+
+                // Defaults
                 int price = 100;
                 int stock = 10;
                 String rarity = "Common";
-                
-                ItemMeta meta = hand.getItemMeta();
-                if (meta != null) {
-                    org.bukkit.persistence.PersistentDataContainer pdc = meta.getPersistentDataContainer();
-                    org.bukkit.NamespacedKey priceKey = new org.bukkit.NamespacedKey(id.naturalsmp.naturalFun.NaturalFun.getPlugin(id.naturalsmp.naturalFun.NaturalFun.class), "shop_price");
-                    org.bukkit.NamespacedKey stockKey = new org.bukkit.NamespacedKey(id.naturalsmp.naturalFun.NaturalFun.getPlugin(id.naturalsmp.naturalFun.NaturalFun.class), "shop_stock");
-                    org.bukkit.NamespacedKey rarityKey = new org.bukkit.NamespacedKey(id.naturalsmp.naturalFun.NaturalFun.getPlugin(id.naturalsmp.naturalFun.NaturalFun.class), "shop_rarity");
-                    
-                    if (pdc.has(priceKey, org.bukkit.persistence.PersistentDataType.INTEGER)) {
-                        price = pdc.get(priceKey, org.bukkit.persistence.PersistentDataType.INTEGER);
-                    }
-                    if (pdc.has(stockKey, org.bukkit.persistence.PersistentDataType.INTEGER)) {
-                        stock = pdc.get(stockKey, org.bukkit.persistence.PersistentDataType.INTEGER);
-                    }
-                    if (pdc.has(rarityKey, org.bukkit.persistence.PersistentDataType.STRING)) {
-                        rarity = pdc.get(rarityKey, org.bukkit.persistence.PersistentDataType.STRING);
-                    }
-                }
-                
+
+                // Check if item already has shop tags from previously being in shop?
+                // Mostly nice to keep, but optional.
+
                 shopManager.addShopItem(hand.clone(), price, stock, rarity);
-                player.sendMessage(ColorUtils.miniMessage("<green>Item added! Price: " + price + ", Stock: " + stock + ", Rarity: " + rarity));
+                player.sendMessage(ColorUtils.miniMessage("<green>Item added! Price: " + price + ", Stock: " + stock));
                 openEditor(player, holder.page);
                 return;
             }
-            
-            // Delete Item (Right Click or Shift Right?)
+
+            // Edit / Delete Item
             ItemStack clicked = inv.getItem(slot);
             if (clicked != null && slot < 45) {
-                if (event.isRightClick()) {
-                    // Find item ID from manager (match index)
-                    int index = holder.page * 45 + slot;
-                    List<ShopItem> items = shopManager.getShopItems();
-                    if (index < items.size()) {
-                        ShopItem item = items.get(index);
+                int index = holder.page * 45 + slot;
+                List<ShopItem> items = shopManager.getShopItems();
+                if (index >= items.size())
+                    return;
+
+                ShopItem item = items.get(index);
+
+                // Delete: Drop Key (Q)
+                if (event.getClick().isKeyboardClick() || event.isRightClick()) {
+                    // Keeping Right Click for delete as per previous logic, but strictly for
+                    // non-shift
+                    if (!event.isShiftClick()) {
                         shopManager.removeShopItem(item.getId());
                         player.sendMessage(ColorUtils.miniMessage("<red>Item removed."));
                         openEditor(player, holder.page);
+                        return;
                     }
+                }
+
+                // Edit Price: Shift + Left Click
+                if (event.isShiftClick() && event.isLeftClick()) {
+                    player.closeInventory();
+                    player.sendMessage(ColorUtils.miniMessage("<yellow>Type new PRICE in chat (or 'cancel'):"));
+                    EditorInputListener.awaitInput(player, (input) -> {
+                        try {
+                            int val = Integer.parseInt(input);
+                            if (val < 0)
+                                throw new NumberFormatException();
+                            item.setPrice(val);
+                            shopManager.save();
+                            player.sendMessage(ColorUtils.miniMessage("<green>Price updated to " + val));
+                        } catch (Exception e) {
+                            player.sendMessage(ColorUtils.miniMessage("<red>Invalid number. input 'cancel' to abort."));
+                        }
+                        openEditor(player, holder.page);
+                    });
+                    return;
+                }
+
+                // Edit Stock: Shift + Right Click
+                if (event.isShiftClick() && event.isRightClick()) {
+                    player.closeInventory();
+                    player.sendMessage(ColorUtils.miniMessage("<yellow>Type new STOCK in chat (or 'cancel'):"));
+                    EditorInputListener.awaitInput(player, (input) -> {
+                        try {
+                            int val = Integer.parseInt(input);
+                            item.setStock(val);
+                            shopManager.save();
+                            player.sendMessage(ColorUtils.miniMessage("<green>Stock updated to " + val));
+                        } catch (Exception e) {
+                            player.sendMessage(ColorUtils.miniMessage("<red>Invalid number."));
+                        }
+                        openEditor(player, holder.page);
+                    });
+                    return;
                 }
             }
             return;
         }
-        
+
         // Shop Buy Action
         if (!holder.isEditor) {
-             ItemStack clicked = inv.getItem(slot);
-             if (clicked != null && slot < 45) {
-                 int index = holder.page * 45 + slot;
-                 List<ShopItem> items = shopManager.getShopItems();
-                 if (index < items.size()) {
-                     ShopItem item = items.get(index);
-                     
-                     if (item.getStock() <= 0) {
-                         player.sendMessage(ColorUtils.miniMessage("<red>Out of stock!"));
-                         return;
-                     }
-                     
-                     if (currencyManager.hasBalance(player.getUniqueId(), item.getPrice())) {
-                         currencyManager.takeBalance(player.getUniqueId(), item.getPrice());
-                         item.decreaseStock(1);
-                         shopManager.save(); // Save stock change
-                         
-                         // Give item
-                         player.getInventory().addItem(item.getItemStack().clone());
-                         player.sendMessage(ColorUtils.miniMessage("<green>Purchased for <yellow>" + item.getPrice() + " coins!"));
-                         
-                         openShop(player, holder.page); // Refresh GUI
-                     } else {
-                         player.sendMessage(ColorUtils.miniMessage("<red>Not enough Bloodmoon Coins!"));
-                     }
-                 }
-             }
+            ItemStack clicked = inv.getItem(slot);
+            if (clicked != null && slot < 45) {
+                int index = holder.page * 45 + slot;
+                List<ShopItem> items = shopManager.getShopItems();
+                if (index < items.size()) {
+                    ShopItem item = items.get(index);
+
+                    if (item.getStock() <= 0) {
+                        player.sendMessage(ColorUtils.miniMessage("<red>Out of stock!"));
+                        return;
+                    }
+
+                    if (currencyManager.hasBalance(player.getUniqueId(), item.getPrice())) {
+                        currencyManager.takeBalance(player.getUniqueId(), item.getPrice());
+                        item.decreaseStock(1);
+                        shopManager.save(); // Save stock change
+
+                        // Give item
+                        player.getInventory().addItem(item.getItemStack().clone());
+                        player.sendMessage(
+                                ColorUtils.miniMessage("<green>Purchased for <yellow>" + item.getPrice() + " coins!"));
+
+                        openShop(player, holder.page); // Refresh GUI
+                    } else {
+                        player.sendMessage(ColorUtils.miniMessage("<red>Not enough Bloodmoon Coins!"));
+                    }
+                }
+            }
         }
     }
 
     public static class ShopHolder implements InventoryHolder {
         private final boolean isEditor;
         private final int page;
-        public ShopHolder(boolean isEditor, int page) { 
-            this.isEditor = isEditor; 
+
+        public ShopHolder(boolean isEditor, int page) {
+            this.isEditor = isEditor;
             this.page = page;
         }
-        @Override public @NotNull Inventory getInventory() { return null; }
+
+        @Override
+        public @NotNull Inventory getInventory() {
+            return null;
+        }
     }
 }

@@ -12,6 +12,7 @@ import id.naturalsmp.naturalFun.bloodmoon.GiveBMCoinCommand;
 import id.naturalsmp.naturalFun.bloodmoon.BloodmoonShopCommand;
 import id.naturalsmp.naturalFun.bloodmoon.BMLeaderboardCommand;
 import id.naturalsmp.naturalFun.bloodmoon.BMEditItemCommand;
+import id.naturalsmp.naturalFun.bloodmoon.BloodmoonAdminGUI;
 import id.naturalsmp.naturalFun.fun.FunCommand;
 import id.naturalsmp.naturalFun.fun.FunListener;
 import id.naturalsmp.naturalFun.trader.TraderCommand;
@@ -35,9 +36,9 @@ public final class NaturalFun extends JavaPlugin {
         // Config
         saveDefaultConfig();
         loadMessages();
-        
+
         // --- Modules ---
-        
+
         // 1. Bloodmoon
         // 1. Bloodmoon
         SafezoneManager.init(this);
@@ -46,40 +47,47 @@ public final class NaturalFun extends JavaPlugin {
         BloodmoonCurrencyManager currencyManager = new BloodmoonCurrencyManager(this);
         BloodmoonShopManager shopManager = new BloodmoonShopManager(this);
         BloodmoonShopGUI shopGUI = new BloodmoonShopGUI(shopManager, currencyManager);
-        
-        getServer().getPluginManager().registerEvents(new BloodmoonListener(this, bloodmoonManager, leaderboardManager), this);
+
+        getServer().getPluginManager().registerEvents(new BloodmoonListener(this, bloodmoonManager, leaderboardManager),
+                this);
         getServer().getPluginManager().registerEvents(shopGUI, this);
-        
-        getCommand("bloodmoon").setExecutor(new BloodmoonCommand(bloodmoonManager, leaderboardManager));
+
+        BloodmoonAdminGUI adminGUI = new BloodmoonAdminGUI(this, bloodmoonManager, shopGUI);
+        getServer().getPluginManager().registerEvents(adminGUI, this);
+        getServer().getPluginManager().registerEvents(new EditorInputListener(), this);
+
+        getCommand("bloodmoon").setExecutor(new BloodmoonCommand(bloodmoonManager, leaderboardManager, adminGUI));
         getCommand("givebmcoin").setExecutor(new GiveBMCoinCommand(currencyManager));
         getCommand("bmshop").setExecutor(new BloodmoonShopCommand(shopGUI));
         getCommand("bmleaderboard").setExecutor(new BMLeaderboardCommand(leaderboardManager));
-        
+
         BMEditItemCommand editCmd = new BMEditItemCommand(this);
         getCommand("bmsetprice").setExecutor(editCmd);
         getCommand("bmsetstock").setExecutor(editCmd);
         getCommand("bmsetrarity").setExecutor(editCmd);
-        
+
         // 2. Fun
         FunCommand funCmd = new FunCommand(this);
         getCommand("gg").setExecutor(funCmd);
         getCommand("noob").setExecutor(funCmd);
         getServer().getPluginManager().registerEvents(new FunListener(this), this);
-        
+
         // 3. Trader
         traderManager = new TraderManager(this);
         getServer().getPluginManager().registerEvents(new TraderListener(traderManager), this);
         getCommand("traderadmin").setExecutor(new TraderCommand(this, traderManager));
-        
+
         getLogger().info("NaturalFun has been enabled with all features!");
     }
 
     @Override
     public void onDisable() {
-        if (leaderboardManager != null) leaderboardManager.save();
-        if (traderManager != null) traderManager.save();
+        if (leaderboardManager != null)
+            leaderboardManager.save();
+        if (traderManager != null)
+            traderManager.save();
     }
-    
+
     private void loadMessages() {
         File file = new File(getDataFolder(), "messages.yml");
         if (!file.exists()) {
@@ -87,9 +95,10 @@ public final class NaturalFun extends JavaPlugin {
         }
         messagesConfig = YamlConfiguration.loadConfiguration(file);
     }
-    
+
     public FileConfiguration getMessagesConfig() {
-        if (messagesConfig == null) loadMessages();
+        if (messagesConfig == null)
+            loadMessages();
         return messagesConfig;
     }
 }

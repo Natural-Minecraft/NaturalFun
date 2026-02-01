@@ -13,24 +13,44 @@ import java.util.UUID;
 
 public class BloodmoonCommand implements CommandExecutor {
 
+    private final NaturalFun plugin;
     private final BloodmoonManager bloodmoonManager;
     private final LeaderboardManager leaderboardManager;
+    private final BloodmoonAdminGUI adminGUI;
 
-    public BloodmoonCommand(BloodmoonManager bloodmoonManager, LeaderboardManager leaderboardManager) {
+    public BloodmoonCommand(BloodmoonManager bloodmoonManager, LeaderboardManager leaderboardManager,
+            BloodmoonAdminGUI adminGUI) {
         this.bloodmoonManager = bloodmoonManager;
         this.leaderboardManager = leaderboardManager;
+        this.adminGUI = adminGUI;
+        this.plugin = NaturalFun.getPlugin(NaturalFun.class);
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
+            @NotNull String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ColorUtils.miniMessage("<gradient:#00008B:#ADD8E6>Bloodmoon Plugin by NaturalSMP</gradient>"));
+            if (sender instanceof Player && sender.hasPermission("bloodmoon.admin")) {
+                adminGUI.open((Player) sender);
+                return true;
+            }
+
+            // Show status
+            if (bloodmoonManager.isBloodmoonActive()) {
+                sender.sendMessage(ColorUtils.miniMessage(
+                        "<red>Bloodmoon is currently ACTIVE! Time left: " + bloodmoonManager.getFormattedTime()));
+            } else {
+                sender.sendMessage(ColorUtils.miniMessage("<green>Bloodmoon is inactive."));
+            }
             return true;
         }
 
+        // ... Keep existing subcommands (start/stop) as fallback or for console ...
+
         switch (args[0].toLowerCase()) {
             case "start":
-                if (!sender.hasPermission("bloodmoon.admin")) return true;
+                if (!sender.hasPermission("bloodmoon.admin"))
+                    return true;
                 if (sender instanceof Player) {
                     bloodmoonManager.startBloodmoon(((Player) sender).getWorld());
                 } else {
@@ -38,7 +58,8 @@ public class BloodmoonCommand implements CommandExecutor {
                 }
                 break;
             case "stop":
-                if (!sender.hasPermission("bloodmoon.admin")) return true;
+                if (!sender.hasPermission("bloodmoon.admin"))
+                    return true;
                 if (sender instanceof Player) {
                     bloodmoonManager.stopBloodmoon(((Player) sender).getWorld());
                 } else {
@@ -46,12 +67,15 @@ public class BloodmoonCommand implements CommandExecutor {
                 }
                 break;
             case "top":
-                sender.sendMessage(ColorUtils.miniMessage("<gradient:#ADD8E6:#00008B><b>--- Bloodmoon Top Kills ---</b></gradient>"));
+                sender.sendMessage(ColorUtils
+                        .miniMessage("<gradient:#ADD8E6:#00008B><b>--- Bloodmoon Top Kills ---</b></gradient>"));
                 int i = 1;
                 for (Map.Entry<String, Integer> entry : leaderboardManager.getTopKills(10)) {
                     String name = Bukkit.getOfflinePlayer(UUID.fromString(entry.getKey())).getName();
-                    if (name == null) name = "Unknown";
-                    sender.sendMessage(ColorUtils.miniMessage("<gray>" + i + ". " + name + ": <yellow>" + entry.getValue()));
+                    if (name == null)
+                        name = "Unknown";
+                    sender.sendMessage(
+                            ColorUtils.miniMessage("<gray>" + i + ". " + name + ": <yellow>" + entry.getValue()));
                     i++;
                 }
                 break;
