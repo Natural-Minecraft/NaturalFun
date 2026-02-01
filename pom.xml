@@ -6,7 +6,7 @@
 
     <groupId>id.naturalsmp</groupId>
     <artifactId>NaturalFun</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <name>NaturalFun</name>
@@ -17,6 +17,7 @@
     </properties>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
         <defaultGoal>clean package</defaultGoal>
         <plugins>
             <plugin>
