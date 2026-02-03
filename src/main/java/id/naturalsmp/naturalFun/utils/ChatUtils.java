@@ -59,12 +59,12 @@ public class ChatUtils {
     }
 
     /**
-     * Serializes Component to plain text.
+     * Serializes Component to legacy string with section symbol (§).
      */
     public static String serialize(Component component) {
         if (component == null)
             return "";
-        return PlainTextComponentSerializer.plainText().serialize(component);
+        return SECTION_SERIALIZER.serialize(component);
     }
 
     public static List<String> colorize(List<String> list) {

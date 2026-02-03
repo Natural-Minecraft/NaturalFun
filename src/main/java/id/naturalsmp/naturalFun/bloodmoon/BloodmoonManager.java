@@ -15,10 +15,11 @@ public class BloodmoonManager {
     private final NaturalFun plugin;
     private BukkitRunnable bloodmoonTask;
     private long remainingTime = 0;
-    private final int BLOODMOON_DURATION = 20 * 60;
+    private final int BLOODMOON_DURATION = 15 * 60; // 15 minutes in seconds
 
     private FileConfiguration messagesConfig;
     private boolean isBloodmoonActive = false;
+    private org.bukkit.boss.BossBar bossBar;
 
     public BloodmoonManager(NaturalFun plugin) {
         this.plugin = plugin;
@@ -55,11 +56,36 @@ public class BloodmoonManager {
 
         remainingTime = BLOODMOON_DURATION;
 
+        // Create BossBar
+        String bossBarTitle = messagesConfig.getString("bloodmoon.bossbar-title",
+                "<red><b>BLOODMOON</b></red> - <white>%time%</white>");
+        bossBar = Bukkit.createBossBar(
+                ChatUtils.serialize(ChatUtils.toComponent(bossBarTitle.replace("%time%", getFormattedTime()))),
+                org.bukkit.boss.BarColor.RED,
+                org.bukkit.boss.BarStyle.SOLID);
+        bossBar.setVisible(true);
+        Bukkit.getOnlinePlayers().forEach(bossBar::addPlayer);
+
         bloodmoonTask = new BukkitRunnable() {
             @Override
             public void run() {
                 remainingTime--;
                 world.setTime(14000);
+
+                // Update BossBar
+                if (bossBar != null) {
+                    bossBar.setTitle(ChatUtils
+                            .serialize(ChatUtils.toComponent(bossBarTitle.replace("%time%", getFormattedTime()))));
+                    bossBar.setProgress(Math.max(0, Math.min(1, (double) remainingTime / BLOODMOON_DURATION)));
+
+                    // Ensure all players see the bossbar
+                    Bukkit.getOnlinePlayers().forEach(p -> {
+                        if (!bossBar.getPlayers().contains(p)) {
+                            bossBar.addPlayer(p);
+                        }
+                    });
+                }
+
                 if (remainingTime <= 0) {
                     stopBloodmoon(world);
                 }
@@ -75,6 +101,11 @@ public class BloodmoonManager {
         isBloodmoonActive = false;
         if (bloodmoonTask != null && !bloodmoonTask.isCancelled()) {
             bloodmoonTask.cancel();
+        }
+
+        if (bossBar != null) {
+            bossBar.removeAll();
+            bossBar = null;
         }
 
         world.setTime(0);
