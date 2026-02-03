@@ -1,4 +1,4 @@
-package id.naturalsmp.naturalfun.utils;
+package id.naturalsmp.naturalFun.utils;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;

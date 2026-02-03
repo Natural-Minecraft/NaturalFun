@@ -115,7 +115,7 @@ public class TraderManager {
     public void spawnTraderEntity(String id, String name, Location loc, Villager.Profession profession) {
         Villager v = (Villager) loc.getWorld().spawnEntity(loc, EntityType.VILLAGER);
         v.setProfession(profession);
-        v.setCustomName(ChatUtils.colorize(name));
+        v.customName(ChatUtils.toComponent(name));
         v.setCustomNameVisible(true);
         v.setAI(false);
         v.setInvulnerable(true);
@@ -127,7 +127,7 @@ public class TraderManager {
             if (data.location.getWorld().equals(v.getWorld()) && data.location.distanceSquared(v.getLocation()) < 1.0) {
                 return true;
             }
-            if (v.getCustomName() != null && v.getCustomName().equals(ChatUtils.colorize(data.name))) {
+            if (v.customName() != null && ChatUtils.serialize(v.customName()).equals(ChatUtils.colorize(data.name))) {
                 return true;
             }
         }
@@ -137,7 +137,7 @@ public class TraderManager {
     public void openTrade(Player p, Villager v) {
         TraderData found = null;
         for (TraderData data : traders.values()) {
-            if (v.getCustomName() != null && v.getCustomName().equals(ChatUtils.colorize(data.name))) {
+            if (v.customName() != null && ChatUtils.serialize(v.customName()).equals(ChatUtils.colorize(data.name))) {
                 found = data;
                 break;
             }
