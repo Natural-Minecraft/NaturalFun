@@ -24,6 +24,32 @@ public class BloodmoonManager {
     public BloodmoonManager(NaturalFun plugin) {
         this.plugin = plugin;
         loadMessages();
+        scheduleAutoStart();
+    }
+
+    private void scheduleAutoStart() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (isBloodmoonActive)
+                    return;
+
+                // Check every 20 seconds
+                for (World world : Bukkit.getWorlds()) {
+                    if (world.getEnvironment() != World.Environment.NORMAL)
+                        continue;
+
+                    long time = world.getTime();
+                    // Check at dusk (13000 - 13400)
+                    if (time >= 13000 && time < 13400) {
+                        // 5% Chance per night
+                        if (Math.random() < 0.05) {
+                            startBloodmoon(world);
+                        }
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 400L, 400L); // Check every 20 seconds
     }
 
     private void loadMessages() {
