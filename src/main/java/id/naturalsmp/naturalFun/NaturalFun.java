@@ -97,8 +97,7 @@ public final class NaturalFun extends JavaPlugin {
             }, this);
         }
 
-        getLogger().info(ChatUtils.colorize(
-                "<gradient:#FFD700:#FFA500>NaturalFun</gradient> <white>has been enabled with all features!"));
+        getLogger().info("NaturalFun has been enabled with all features!");
     }
 
     @Override

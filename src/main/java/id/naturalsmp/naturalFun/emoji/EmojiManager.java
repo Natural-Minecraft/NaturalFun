@@ -36,6 +36,7 @@ public class EmojiManager {
     private FileConfiguration emojiConfig;
     private boolean enabled = true;
     private boolean itemsAdderAvailable = false;
+    private boolean itemsAdderReady = false;
 
     public EmojiManager(NaturalFun plugin) {
         this.plugin = plugin;
@@ -80,8 +81,8 @@ public class EmojiManager {
             List<String> triggers = emoji.getStringList("triggers");
             String permission = emoji.getString("permission", "");
 
-            // Resolve the actual character from ItemsAdder
-            String resolvedChar = resolveCharacter(fontImageId, fallbackChar);
+            // Resolve the actual character from ItemsAdder (only if data is ready)
+            String resolvedChar = itemsAdderReady ? resolveCharacter(fontImageId, fallbackChar) : fallbackChar;
 
             EmojiData data = new EmojiData(key, resolvedChar, fontImageId, fallbackChar, permission);
 
@@ -92,7 +93,8 @@ public class EmojiManager {
 
         buildPattern();
         plugin.getLogger().info("Loaded " + emojiSection.getKeys(false).size() + " emojis with "
-                + emojiRegistry.size() + " triggers (ItemsAdder: " + itemsAdderAvailable + ")");
+                + emojiRegistry.size() + " triggers (ItemsAdder: " + itemsAdderAvailable
+                + ", Ready: " + itemsAdderReady + ")");
     }
 
     /**
@@ -125,6 +127,7 @@ public class EmojiManager {
      */
     public void onItemsAdderReady() {
         this.itemsAdderAvailable = true;
+        this.itemsAdderReady = true;
         loadEmojis();
         plugin.getLogger().info("ItemsAdder ready! Re-resolved all emoji font images.");
     }
