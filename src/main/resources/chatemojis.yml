@@ -17,7 +17,6 @@ enabled: true
 #           DAFTAR EMOJI
 # ==========================================
 list:
-  # --- EKSPRESI WAJAH (Twitter Emojis) ---
   smile:
     font_image: "twitteremojis:smile"
     fallback: "☺"
