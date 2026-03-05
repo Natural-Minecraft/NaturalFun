@@ -1,0 +1,293 @@
+# ==========================================
+#     NATURALFUN - CHAT EMOJIS (ItemsAdder)
+# ==========================================
+# Emoji menggunakan font image dari ItemsAdder resource pack.
+# Setiap emoji memiliki:
+#   font_image: ID font image dari ItemsAdder (namespace:name)
+#   fallback: Karakter Unicode sebagai fallback jika ItemsAdder tidak ada
+#   triggers: Teks pemicu yang akan diganti  
+#   permission: Permission khusus (kosong = semua bisa pakai)
+
+enabled: true
+
+# Permission dasar: naturalsmp.emoji.use
+# Akses semua: naturalsmp.emoji.*
+
+# ==========================================
+#           DAFTAR EMOJI
+# ==========================================
+list:
+  # --- EKSPRESI WAJAH (Twitter Emojis) ---
+  smile:
+    font_image: "twitteremojis:smile"
+    fallback: "☺"
+    triggers: [":)", ":smile:"]
+    permission: ""
+  laugh:
+    font_image: "twitteremojis:laugh"
+    fallback: "😀"
+    triggers: [":D", ":grin:", ":laugh:"]
+    permission: ""
+  sad:
+    font_image: "twitteremojis:frown"
+    fallback: "☹"
+    triggers: [":(", ":sad:"]
+    permission: ""
+  wink:
+    font_image: "twitteremojis:wink"
+    fallback: "😉"
+    triggers: [";)", ":wink:"]
+    permission: ""
+  cool:
+    font_image: "twitteremojis:sunglasses"
+    fallback: "😎"
+    triggers: ["B)", ":cool:", ":sunglasses:"]
+    permission: ""
+  angry:
+    font_image: "twitteremojis:angry"
+    fallback: "😠"
+    triggers: [">:(", ":angry:"]
+    permission: ""
+  cry:
+    font_image: "twitteremojis:cry"
+    fallback: "😢"
+    triggers: [":'(", ":cry:"]
+    permission: ""
+  thinking:
+    font_image: "twitteremojis:thinking"
+    fallback: "🤔"
+    triggers: [":think:", ":thinking:", ":hmm:"]
+    permission: ""
+  sob:
+    font_image: "twitteremojis:cry1"
+    fallback: "😭"
+    triggers: [":sob:", ":cry2:"]
+    permission: ""
+  rofl:
+    font_image: "twitteremojis:laugh4"
+    fallback: "🤣"
+    triggers: [":rofl:"]
+    permission: ""
+  hug:
+    font_image: "twitteremojis:hug"
+    fallback: "🤗"
+    triggers: [":hug:"]
+    permission: ""
+  inlove:
+    font_image: "twitteremojis:inlove"
+    fallback: "😍"
+    triggers: [":inlove:", ":hearteyes:"]
+    permission: ""
+  evil:
+    font_image: "twitteremojis:evil"
+    fallback: "😈"
+    triggers: [":evil:", ":devil:"]
+    permission: ""
+  dead:
+    font_image: "twitteremojis:dead"
+    fallback: "💀"
+    triggers: [":skull:", ":dead:"]
+    permission: ""
+  kiss:
+    font_image: "twitteremojis:kiss"
+    fallback: "😘"
+    triggers: [":kiss:"]
+    permission: ""
+  blush:
+    font_image: "twitteremojis:blush"
+    fallback: "😊"
+    triggers: [":blush:"]
+    permission: ""
+  confused:
+    font_image: "twitteremojis:confused"
+    fallback: "😕"
+    triggers: [":confused:"]
+    permission: ""
+  cold:
+    font_image: "twitteremojis:cold"
+    fallback: "🥶"
+    triggers: [":cold:", ":freezing:"]
+    permission: ""
+  hot:
+    font_image: "twitteremojis:hot"
+    fallback: "🥵"
+    triggers: [":hot:"]
+    permission: ""
+  cowboy:
+    font_image: "twitteremojis:cowboy"
+    fallback: "🤠"
+    triggers: [":cowboy:"]
+    permission: ""
+  halo:
+    font_image: "twitteremojis:halo"
+    fallback: "😇"
+    triggers: [":halo:", ":angel:"]
+    permission: ""
+  explodehead:
+    font_image: "twitteremojis:explodehead"
+    fallback: "🤯"
+    triggers: [":mindblown:", ":exploding_head:"]
+    permission: ""
+  ill:
+    font_image: "twitteremojis:ill"
+    fallback: "🤮"
+    triggers: [":ill:", ":sick:"]
+    permission: ""
+
+  # --- SIMBOL & IKON ---
+  heart:
+    font_image: "twitteremojis:heart"
+    fallback: "❤"
+    triggers: ["<3", ":heart:", ":love:"]
+    permission: ""
+  fire:
+    font_image: "twitteremojis:fire"
+    fallback: "🔥"
+    triggers: [":fire:"]
+    permission: ""
+  confirm:
+    font_image: "twitteremojis:confirm"
+    fallback: "✔"
+    triggers: [":check:", ":yes:", ":ok:"]
+    permission: ""
+  cancel:
+    font_image: "twitteremojis:cancel"
+    fallback: "✖"
+    triggers: [":x:", ":no:", ":cross:"]
+    permission: ""
+  star:
+    font_image: "twitteremojis:star"
+    fallback: "⭐"
+    triggers: [":star:"]
+    permission: ""
+  eyes:
+    font_image: "twitteremojis:eyes"
+    fallback: "👀"
+    triggers: [":eyes:"]
+    permission: ""
+
+  # --- GESTURES ---
+  thumbsup:
+    font_image: "twitteremojis:thumbsup"
+    fallback: "👍"
+    triggers: [":+1:", ":thumbsup:", ":up:"]
+    permission: ""
+  thumbsdown:
+    font_image: "twitteremojis:thumbsdown"
+    fallback: "👎"
+    triggers: [":-1:", ":thumbsdown:", ":down:"]
+    permission: ""
+  bye:
+    font_image: "twitteremojis:bye"
+    fallback: "👋"
+    triggers: [":wave:", ":hi:", ":bye:"]
+    permission: ""
+  clap:
+    font_image: "twitteremojis:clap"
+    fallback: "👏"
+    triggers: [":clap:"]
+    permission: ""
+  biceps:
+    font_image: "twitteremojis:biceps"
+    fallback: "💪"
+    triggers: [":muscle:", ":biceps:", ":strong:"]
+    permission: ""
+  handshake:
+    font_image: "twitteremojis:handshake"
+    fallback: "🤝"
+    triggers: [":handshake:"]
+    permission: ""
+
+  # --- MINECRAFT ITEMS (MC Emojis) ---
+  mc_diamond:
+    font_image: "mcemojis:mc_diamond"
+    fallback: "💎"
+    triggers: [":diamond:", ":gem:"]
+    permission: ""
+  mc_diamond_sword:
+    font_image: "mcemojis:mc_diamond_sword"
+    fallback: "⚔"
+    triggers: [":sword:", ":pvp:"]
+    permission: ""
+  mc_diamond_pickaxe:
+    font_image: "mcemojis:mc_diamond_pickaxe"
+    fallback: "⛏"
+    triggers: [":pick:", ":pickaxe:", ":mine:"]
+    permission: ""
+  mc_golden_apple:
+    font_image: "mcemojis:mc_golden_apple"
+    fallback: "🍎"
+    triggers: [":gapple:", ":goldenapple:"]
+    permission: ""
+  mc_ender_pearl:
+    font_image: "mcemojis:mc_ender_pearl"
+    fallback: "🟣"
+    triggers: [":enderpearl:", ":pearl:"]
+    permission: ""
+  mc_bow:
+    font_image: "mcemojis:mc_bow"
+    fallback: "🏹"
+    triggers: [":bow:"]
+    permission: ""
+  mc_shield:
+    font_image: "mcemojis:mc_shield"
+    fallback: "🛡"
+    triggers: [":shield:"]
+    permission: ""
+  mc_emerald:
+    font_image: "mcemojis:mc_emerald"
+    fallback: "💚"
+    triggers: [":emerald:", ":money:", ":coin:"]
+    permission: ""
+  mc_gold_ingot:
+    font_image: "mcemojis:mc_gold_ingot"
+    fallback: "🪙"
+    triggers: [":gold:"]
+    permission: ""
+  mc_iron_ingot:
+    font_image: "mcemojis:mc_iron_ingot"
+    fallback: "🔩"
+    triggers: [":iron:"]
+    permission: ""
+  mc_tnt:
+    font_image: "mcemojis:mc_tnt"
+    fallback: "💣"
+    triggers: [":tnt:", ":boom:"]
+    permission: ""
+  mc_apple:
+    font_image: "mcemojis:mc_apple"
+    fallback: "🍎"
+    triggers: [":apple:"]
+    permission: ""
+  mc_cake:
+    font_image: "mcemojis:mc_cake"
+    fallback: "🎂"
+    triggers: [":cake:"]
+    permission: ""
+  mc_cookie:
+    font_image: "mcemojis:mc_cookie"
+    fallback: "🍪"
+    triggers: [":cookie:"]
+    permission: ""
+  mc_elytra:
+    font_image: "mcemojis:mc_elytra"
+    fallback: "🪽"
+    triggers: [":elytra:", ":wings:"]
+    permission: ""
+
+  # --- MISC ---
+  poop:
+    font_image: "twitteremojis:poop"
+    fallback: "💩"
+    triggers: [":poop:"]
+    permission: "naturalsmp.emoji.poop"
+  moyai:
+    font_image: ""
+    fallback: "🗿"
+    triggers: [":moyai:", "moyai"]
+    permission: ""
+  shrug:
+    font_image: ""
+    fallback: "¯\\_(ツ)_/¯"
+    triggers: [":shrug:"]
+    permission: ""

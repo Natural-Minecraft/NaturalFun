@@ -2,6 +2,7 @@ name: NaturalFun
 version: '1.0-SNAPSHOT'
 main: id.naturalsmp.naturalFun.NaturalFun
 api-version: '1.21'
+softdepend: [ItemsAdder]
 commands:
   bloodmoon:
     description: Bloodmoon admin command
@@ -29,3 +30,7 @@ commands:
   bmsetrarity:
     description: Set rarity of held item for shop
     permission: bloodmoon.admin
+  emoji:
+    description: Lihat daftar emoji yang tersedia
+    aliases: [emojis, emoticon]
+    permission: naturalsmp.emoji.use

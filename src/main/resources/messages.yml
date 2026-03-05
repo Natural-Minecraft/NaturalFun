@@ -9,7 +9,7 @@ bloodmoon:
 
 fun:
   gg: "<gradient:#00FF00:#00AA00>GG!</gradient> <gray>%player% mengucapkan Good Game!</gray>"
-  noob: "<gradient:#FF0000:#AA0000>NOOB!</gradient> <gray>%player% merasa seperti pemula.</gray>"
+  noob: "<gradient:#FF0000:#AA0000>NOOB!</gradient> <gray>dari %player%!</gray>"
   cooldown: "<red>Tunggu %time% detik lagi!</red>"
   warden-kill: "<gradient:#00AAAA:#00FFFF><b>WARDEN SLAIN!</b></gradient> <white>%player% telah membunuh Warden!</white>"
   

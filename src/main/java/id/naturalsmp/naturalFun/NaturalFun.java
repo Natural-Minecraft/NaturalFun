@@ -1,6 +1,10 @@
 package id.naturalsmp.naturalFun;
 
 import id.naturalsmp.naturalFun.bloodmoon.*;
+import id.naturalsmp.naturalFun.emoji.EmojiChatListener;
+import id.naturalsmp.naturalFun.emoji.EmojiCommand;
+import id.naturalsmp.naturalFun.emoji.EmojiGUI;
+import id.naturalsmp.naturalFun.emoji.EmojiManager;
 import id.naturalsmp.naturalFun.fun.FunCommand;
 import id.naturalsmp.naturalFun.fun.FunListener;
 import id.naturalsmp.naturalFun.trader.TraderCommand;
@@ -9,6 +13,8 @@ import id.naturalsmp.naturalFun.trader.TraderManager;
 import id.naturalsmp.naturalFun.utils.ChatUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -19,6 +25,7 @@ public final class NaturalFun extends JavaPlugin {
     private BloodmoonManager bloodmoonManager;
     private LeaderboardManager leaderboardManager;
     private TraderManager traderManager;
+    private EmojiManager emojiManager;
     private FileConfiguration messagesConfig;
 
     @Override
@@ -68,6 +75,28 @@ public final class NaturalFun extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TraderListener(traderManager), this);
         getCommand("traderadmin").setExecutor(new TraderCommand(this, traderManager));
 
+        // 4. Emoji System (ItemsAdder Integration)
+        this.emojiManager = new EmojiManager(this);
+        EmojiCommand emojiCmd = new EmojiCommand(this);
+        getCommand("emoji").setExecutor(emojiCmd);
+        getCommand("emoji").setTabCompleter(emojiCmd);
+        getServer().getPluginManager().registerEvents(new EmojiGUI(this), this);
+        getServer().getPluginManager().registerEvents(new EmojiChatListener(this), this);
+        getLogger().info("Emoji System: ENABLED (ItemsAdder: " +
+                (getServer().getPluginManager().getPlugin("ItemsAdder") != null) + ")");
+
+        // Listen for ItemsAdder load completion to re-resolve font images
+        if (getServer().getPluginManager().getPlugin("ItemsAdder") != null) {
+            getServer().getPluginManager().registerEvents(new Listener() {
+                @EventHandler
+                public void onItemsAdderLoad(dev.lone.itemsadder.api.Events.ItemsAdderLoadDataEvent event) {
+                    if (emojiManager != null) {
+                        emojiManager.onItemsAdderReady();
+                    }
+                }
+            }, this);
+        }
+
         getLogger().info(ChatUtils.colorize(
                 "<gradient:#FFD700:#FFA500>NaturalFun</gradient> <white>has been enabled with all features!"));
     }
@@ -92,6 +121,10 @@ public final class NaturalFun extends JavaPlugin {
         if (messagesConfig == null)
             loadMessages();
         return messagesConfig;
+    }
+
+    public EmojiManager getEmojiManager() {
+        return emojiManager;
     }
 
     public static NaturalFun getInstance() {
