@@ -10,7 +10,7 @@ import id.naturalsmp.naturalFun.fun.FunListener;
 import id.naturalsmp.naturalFun.trader.TraderCommand;
 import id.naturalsmp.naturalFun.trader.TraderListener;
 import id.naturalsmp.naturalFun.trader.TraderManager;
-import id.naturalsmp.naturalFun.utils.ChatUtils;
+
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;

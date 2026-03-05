@@ -53,11 +53,7 @@ list:
     fallback: "😢"
     triggers: [":'(", ":cry:"]
     permission: ""
-  thinking:
-    font_image: "twitteremojis:thinking"
-    fallback: "🤔"
-    triggers: [":think:", ":thinking:", ":hmm:"]
-    permission: ""
+
   sob:
     font_image: "twitteremojis:cry1"
     fallback: "😭"
@@ -167,16 +163,7 @@ list:
     permission: ""
 
   # --- GESTURES ---
-  thumbsup:
-    font_image: "twitteremojis:thumbsup"
-    fallback: "👍"
-    triggers: [":+1:", ":thumbsup:", ":up:"]
-    permission: ""
-  thumbsdown:
-    font_image: "twitteremojis:thumbsdown"
-    fallback: "👎"
-    triggers: [":-1:", ":thumbsdown:", ":down:"]
-    permission: ""
+
   bye:
     font_image: "twitteremojis:bye"
     fallback: "👋"
@@ -229,11 +216,7 @@ list:
     fallback: "🏹"
     triggers: [":bow:"]
     permission: ""
-  mc_shield:
-    font_image: "mcemojis:mc_shield"
-    fallback: "🛡"
-    triggers: [":shield:"]
-    permission: ""
+
   mc_emerald:
     font_image: "mcemojis:mc_emerald"
     fallback: "💚"
@@ -249,11 +232,7 @@ list:
     fallback: "🔩"
     triggers: [":iron:"]
     permission: ""
-  mc_tnt:
-    font_image: "mcemojis:mc_tnt"
-    fallback: "💣"
-    triggers: [":tnt:", ":boom:"]
-    permission: ""
+
   mc_apple:
     font_image: "mcemojis:mc_apple"
     fallback: "🍎"
@@ -276,11 +255,7 @@ list:
     permission: ""
 
   # --- MISC ---
-  poop:
-    font_image: "twitteremojis:poop"
-    fallback: "💩"
-    triggers: [":poop:"]
-    permission: "naturalsmp.emoji.poop"
+
   moyai:
     font_image: ""
     fallback: "🗿"
