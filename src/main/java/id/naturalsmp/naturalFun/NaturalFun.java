@@ -1,6 +1,10 @@
 package id.naturalsmp.naturalFun;
 
 import id.naturalsmp.naturalFun.bloodmoon.*;
+import id.naturalsmp.naturalFun.colorgame.ColorGameCommand;
+import id.naturalsmp.naturalFun.colorgame.ColorGameLeaderboard;
+import id.naturalsmp.naturalFun.colorgame.ColorGameListener;
+import id.naturalsmp.naturalFun.colorgame.ColorGameManager;
 import id.naturalsmp.naturalFun.emoji.EmojiChatListener;
 import id.naturalsmp.naturalFun.emoji.EmojiCommand;
 import id.naturalsmp.naturalFun.emoji.EmojiGUI;
@@ -84,6 +88,16 @@ public final class NaturalFun extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new EmojiChatListener(this), this);
         getLogger().info("Emoji System: ENABLED (ItemsAdder: " +
                 (getServer().getPluginManager().getPlugin("ItemsAdder") != null) + ")");
+
+        // 5. Color Game (Tebak Warna)
+        ColorGameLeaderboard colorLeaderboard = new ColorGameLeaderboard(this);
+        ColorGameManager colorGameManager = new ColorGameManager(this, colorLeaderboard);
+        ColorGameCommand colorGameCmd = new ColorGameCommand(this, colorGameManager);
+        getServer().getPluginManager().registerEvents(new ColorGameListener(this, colorGameManager), this);
+        getCommand("colorgame").setExecutor(colorGameCmd);
+        getCommand("colorgame").setTabCompleter(colorGameCmd);
+        getCommand("content").setExecutor(colorGameCmd);
+        getLogger().info("Color Game: ENABLED");
 
         // Listen for ItemsAdder load completion to re-resolve font images
         if (getServer().getPluginManager().getPlugin("ItemsAdder") != null) {

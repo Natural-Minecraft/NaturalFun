@@ -34,3 +34,8 @@ commands:
     description: Lihat daftar emoji yang tersedia
     aliases: [emojis, emoticon]
     permission: naturalsmp.emoji.use
+  colorgame:
+    description: Tebak Warna mini-game
+    aliases: [tebakwarna]
+  content:
+    description: Teleport ke world Content
