@@ -88,11 +88,9 @@ public class ColorGameCommand implements CommandExecutor, TabCompleter {
 
         sender.sendMessage(ChatUtils.toComponent(""));
         sender.sendMessage(ChatUtils.toComponent(
-                "<gradient:#FFD700:#FFA500><b>╔══════════════════════════════════╗</b></gradient>"));
+                "<gradient:#FFD700:#FFA500><b>🎨 TEBAK WARNA — TOP 10</b></gradient>"));
         sender.sendMessage(ChatUtils.toComponent(
-                "<gradient:#FFD700:#FFA500><b>║  🎨  TEBAK WARNA LEADERBOARD  🎨 ║</b></gradient>"));
-        sender.sendMessage(ChatUtils.toComponent(
-                "<gradient:#FFD700:#FFA500><b>╚══════════════════════════════════╝</b></gradient>"));
+                "<dark_gray>────────────────────────────────"));
 
         if (top.isEmpty()) {
             sender.sendMessage(ChatUtils.toComponent("  <gray>Belum ada data leaderboard."));
@@ -106,7 +104,7 @@ public class ColorGameCommand implements CommandExecutor, TabCompleter {
                         "  " + medal + " <yellow>" + e.name()
                         + " <white>— <green>" + e.wins() + " menang"
                         + " <dark_gray>(" + e.games() + " game, avg "
-                        + String.format("%.1f", avg) + "/5)"));
+                        + String.format("%.1f", avg) + "/7)"));
             }
         }
         sender.sendMessage(ChatUtils.toComponent(""));

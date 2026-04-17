@@ -2,6 +2,7 @@ package id.naturalsmp.naturalFun;
 
 import id.naturalsmp.naturalFun.bloodmoon.*;
 import id.naturalsmp.naturalFun.colorgame.ColorGameCommand;
+import id.naturalsmp.naturalFun.colorgame.ColorGameExpansion;
 import id.naturalsmp.naturalFun.colorgame.ColorGameLeaderboard;
 import id.naturalsmp.naturalFun.colorgame.ColorGameListener;
 import id.naturalsmp.naturalFun.colorgame.ColorGameManager;
@@ -97,6 +98,11 @@ public final class NaturalFun extends JavaPlugin {
         getCommand("colorgame").setExecutor(colorGameCmd);
         getCommand("colorgame").setTabCompleter(colorGameCmd);
         getCommand("content").setExecutor(colorGameCmd);
+        // Register PlaceholderAPI expansion if present
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new ColorGameExpansion(colorLeaderboard).register();
+            getLogger().info("Color Game: PlaceholderAPI expansion registered!");
+        }
         getLogger().info("Color Game: ENABLED");
 
         // Listen for ItemsAdder load completion to re-resolve font images

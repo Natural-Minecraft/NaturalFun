@@ -23,8 +23,8 @@ public class ColorGameManager {
 
     // ── Constants ─────────────────────────────────────────────────────────────────
 
-    /** X positions for the 5 answer slots (centered). */
-    public static final int[] SLOT_X = {-2, -1, 0, 1, 2};
+    /** X positions for the 7 answer slots (-3 to 3). */
+    public static final int[] SLOT_X = {-3, -2, -1, 0, 1, 2, 3};
 
     public static final int SETTER_Y  = 74;
     public static final int GUESSER_Y = 76;
@@ -38,13 +38,15 @@ public class ColorGameManager {
     private static final int[] SZ_MIN = {-4, 74, -7};
     private static final int[] SZ_MAX = { 4, 79,  1};
 
-    /** The 5 colour blocks used in the game. */
+    /** The 7 colour blocks used in the game. */
     public static final Material[] COLORS = {
             Material.DIAMOND_BLOCK,
             Material.GOLD_BLOCK,
             Material.EMERALD_BLOCK,
             Material.REDSTONE_BLOCK,
-            Material.NETHERITE_BLOCK
+            Material.NETHERITE_BLOCK,
+            Material.IRON_BLOCK,
+            Material.COPPER_BLOCK
     };
 
     // ── State ─────────────────────────────────────────────────────────────────────
@@ -120,7 +122,7 @@ public class ColorGameManager {
         if (guessers.contains(p.getUniqueId())) return;
         setters.remove(p.getUniqueId());
         guessers.add(p.getUniqueId());
-        giveGuesserItems(p);
+        giveGuesserPreview(p);
         p.showTitle(Title.title(
                 ChatUtils.toComponent("<gradient:#00AAFF:#AA00FF><b>🎨 PENEBAK</b></gradient>"),
                 ChatUtils.toComponent("<gray>Tebak susunan warna bloknya!"),
@@ -153,10 +155,28 @@ public class ColorGameManager {
 
     // ── Item helpers ──────────────────────────────────────────────────────────────
 
-    public void giveGuesserItems(Player p) {
+    /**
+     * Preview: give all 7 colour blocks (addItem). Used when player first enters
+     * the guesser zone (before game starts). Blocks cannot be placed yet.
+     */
+    public void giveGuesserPreview(Player p) {
         p.getInventory().clear();
         for (Material mat : COLORS) p.getInventory().addItem(colorBlock(mat));
     }
+
+    /**
+     * Ordered: place each colour block into hotbar slots 0-6 explicitly.
+     * Called when game transitions to ACTIVE so the hotbar is clean 1→7.
+     */
+    public void giveGuesserOrdered(Player p) {
+        p.getInventory().clear();
+        for (int i = 0; i < COLORS.length; i++) {
+            p.getInventory().setItem(i, colorBlock(COLORS[i]));
+        }
+    }
+
+    /** @deprecated Use giveGuesserPreview or giveGuesserOrdered explicitly. */
+    public void giveGuesserItems(Player p) { giveGuesserPreview(p); }
 
     public void giveSetterItems(Player p) {
         p.getInventory().clear();
@@ -195,6 +215,8 @@ public class ColorGameManager {
             case EMERALD_BLOCK   -> "💚 Zamrud";
             case REDSTONE_BLOCK  -> "❤ Redstone";
             case NETHERITE_BLOCK -> "⬛ Netherite";
+            case IRON_BLOCK      -> "⚙ Besi";
+            case COPPER_BLOCK    -> "🟫 Tembaga";
             default              -> mat.name();
         };
     }
@@ -259,10 +281,10 @@ public class ColorGameManager {
             for (int x : SLOT_X) w.getBlockAt(x, GUESSER_Y, SLOT_Z).setType(Material.AIR);
         }
 
-        // Re-give guesser items
+        // Give guessers their ordered hotbar (slot 0→6 = block 1→7)
         for (UUID uid : guessers) {
             Player p = Bukkit.getPlayer(uid);
-            if (p != null) giveGuesserItems(p);
+            if (p != null) giveGuesserOrdered(p);
         }
 
         eachInWorld(p -> {
@@ -289,14 +311,14 @@ public class ColorGameManager {
 
         int score = cmd - 2550; // 2551 → 1
 
-        // Build title based on score
+        // Build title based on score (max is 7)
         String titleStr;
-        if (score >= 5) {
-            titleStr = "<gradient:#00FF00:#FFFF00><b>🎉 PERFECT! " + score + "/5 BENAR!</b></gradient>";
-        } else if (score >= 3) {
-            titleStr = "<gradient:#FFFF00:#FFA500><b>✨ " + score + "/5 Benar!</b></gradient>";
+        if (score >= 7) {
+            titleStr = "<gradient:#00FF00:#FFFF00><b>🎉 PERFECT! 7/7 BENAR!</b></gradient>";
+        } else if (score >= 4) {
+            titleStr = "<gradient:#FFFF00:#FFA500><b>✨ " + score + "/7 Benar!</b></gradient>";
         } else {
-            titleStr = "<gradient:#FF5500:#FF0000><b>❌ Hanya " + score + "/5 Benar</b></gradient>";
+            titleStr = "<gradient:#FF5500:#FF0000><b>❌ Hanya " + score + "/7 Benar</b></gradient>";
         }
 
         eachInWorld(p -> {
@@ -305,15 +327,15 @@ public class ColorGameManager {
                     ChatUtils.toComponent("<gray>Diumumkan oleh <white>" + setter.getName()),
                     Title.Times.times(Duration.ofMillis(200), Duration.ofMillis(4000), Duration.ofMillis(1000))
             ));
-            Sound snd = score >= 5 ? Sound.UI_TOAST_CHALLENGE_COMPLETE
-                    : score >= 3  ? Sound.ENTITY_EXPERIENCE_ORB_PICKUP
+            Sound snd = score >= 7 ? Sound.UI_TOAST_CHALLENGE_COMPLETE
+                    : score >= 4  ? Sound.ENTITY_EXPERIENCE_ORB_PICKUP
                     : Sound.ENTITY_VILLAGER_NO;
             p.playSound(p.getLocation(), snd, 1f, 1f);
         });
 
         broadcast(ChatUtils.toComponent(
                 "<gradient:#FFD700:#FFA500><b>📊 HASIL:</b></gradient>"
-                + " <white>" + score + "/5 blok benar!"
+                + " <white>" + score + "/7 blok benar!"
                 + " <gray>(diumumkan oleh " + setter.getName() + ")"));
 
         // Answer reveal
@@ -323,8 +345,8 @@ public class ColorGameManager {
         }
         broadcast(ChatUtils.toComponent(reveal.toString().trim()));
 
-        // Leaderboard update
-        if (score >= 5) {
+        // Leaderboard update (perfect = all 7 correct)
+        if (score >= 7) {
             spawnFireworks();
             for (UUID uid : guessers) {
                 Player gp = Bukkit.getPlayer(uid);
@@ -365,7 +387,7 @@ public class ColorGameManager {
         }
         for (UUID uid : guessers) {
             Player p = Bukkit.getPlayer(uid);
-            if (p != null) giveGuesserItems(p);
+            if (p != null) giveGuesserPreview(p);
         }
 
         broadcast(ChatUtils.toComponent(

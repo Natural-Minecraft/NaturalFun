@@ -63,6 +63,11 @@ public class ColorGameLeaderboard {
                 .collect(Collectors.toList());
     }
 
+    /** Returns the total wins for the given player UUID, or 0 if not found. */
+    public int getPlayerWins(java.util.UUID uuid) {
+        return data.getInt(uuid.toString() + ".wins", 0);
+    }
+
     private void save() {
         try {
             data.save(file);

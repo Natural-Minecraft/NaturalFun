@@ -2,7 +2,7 @@ name: NaturalFun
 version: '1.0-SNAPSHOT'
 main: id.naturalsmp.naturalFun.NaturalFun
 api-version: '1.21'
-softdepend: [ItemsAdder]
+softdepend: [ItemsAdder, PlaceholderAPI]
 commands:
   bloodmoon:
     description: Bloodmoon admin command
