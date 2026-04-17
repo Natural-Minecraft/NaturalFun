@@ -123,7 +123,11 @@ public class ColorGameManager {
         if (guessers.contains(p.getUniqueId())) return;
         setters.remove(p.getUniqueId());
         guessers.add(p.getUniqueId());
-        giveGuesserPreview(p);
+        if (state == GameState.ACTIVE || state == GameState.SCORING) {
+            giveGuesserOrdered(p);
+        } else {
+            giveGuesserPreview(p);
+        }
         p.showTitle(Title.title(
                 ChatUtils.toComponent("<gradient:#00AAFF:#AA00FF><b>🎨 PENEBAK</b></gradient>"),
                 ChatUtils.toComponent("<gray>Tebak susunan warna bloknya!"),
@@ -138,7 +142,11 @@ public class ColorGameManager {
         if (setters.contains(p.getUniqueId())) return;
         guessers.remove(p.getUniqueId());
         setters.add(p.getUniqueId());
-        giveSetterPreview(p);
+        if (state == GameState.ACTIVE || state == GameState.SCORING) {
+            giveSetterOrdered(p);
+        } else {
+            giveSetterPreview(p);
+        }
         p.showTitle(Title.title(
                 ChatUtils.toComponent("<gradient:#FF5500:#FF0000><b>🔧 PENENTU</b></gradient>"),
                 ChatUtils.toComponent("<gray>Susun blok jawabanmu di slot bawah!"),

@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -188,5 +189,17 @@ public class ColorGameListener implements Listener {
         if (score < 0) {
             p.sendMessage(ChatUtils.toComponent("<red>Game belum aktif atau sudah selesai!"));
         }
+    }
+
+    // ── Item Drop Protection ──────────────────────────────────────────────────────
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onDrop(PlayerDropItemEvent e) {
+        if (!manager.inWorld(e.getPlayer().getLocation())) return;
+        
+        if (manager.isAdminBypass(e.getPlayer().getUniqueId())) return;
+        
+        e.setCancelled(true);
+        e.getPlayer().sendMessage(ChatUtils.toComponent("<red>✖ Kamu tidak bisa membuang item di sini!"));
     }
 }
