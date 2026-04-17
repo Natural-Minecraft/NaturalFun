@@ -57,6 +57,24 @@ public class ColorGameCommand implements CommandExecutor, TabCompleter {
                 showLeaderboard(sender);
                 yield true;
             }
+            case "admin" -> {
+                if (!sender.hasPermission("naturalfun.admin")) {
+                    sender.sendMessage(ChatUtils.toComponent(
+                            "<red>✖ Kamu tidak punya izin untuk ini!"));
+                    yield true;
+                }
+                if (!(sender instanceof Player p)) {
+                    sender.sendMessage("Only players can use this command.");
+                    yield true;
+                }
+                boolean enabled = manager.toggleAdminBypass(p.getUniqueId());
+                if (enabled) {
+                    p.sendMessage(ChatUtils.toComponent("<green>✔ Admin bypass mode ON. Kamu bisa mengedit arena."));
+                } else {
+                    p.sendMessage(ChatUtils.toComponent("<red>✖ Admin bypass mode OFF. Proteksi aktif."));
+                }
+                yield true;
+            }
             case "reset" -> {
                 if (!sender.hasPermission("naturalfun.admin")) {
                     sender.sendMessage(ChatUtils.toComponent(
@@ -131,14 +149,15 @@ public class ColorGameCommand implements CommandExecutor, TabCompleter {
                 + "  <yellow>/content               <gray>— Teleport ke Content World\n"
                 + "  <yellow>/colorgame leaderboard <gray>— Lihat papan peringkat\n"
                 + "  <yellow>/colorgame status      <gray>— Lihat status game\n"
-                + "  <yellow>/colorgame reset       <gray>— Reset arena (admin)"));
+                + "  <yellow>/colorgame reset       <gray>— Reset arena (admin)\n"
+                + "  <yellow>/colorgame admin       <gray>— Toggle edit arena (admin)"));
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd,
                                       String label, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("leaderboard", "status", "reset");
+            return Arrays.asList("leaderboard", "status", "reset", "admin");
         }
         return Collections.emptyList();
     }

@@ -55,8 +55,9 @@ public class ColorGameManager {
     private final ColorGameLeaderboard leaderboard;
 
     private GameState state = GameState.IDLE;
-    private final Set<UUID> setters  = new HashSet<>();
-    private final Set<UUID> guessers = new HashSet<>();
+    private final Set<UUID> setters      = new HashSet<>();
+    private final Set<UUID> guessers     = new HashSet<>();
+    private final Set<UUID> adminBypass  = new HashSet<>();  // bypass world protection
     private final Material[] setterAnswer = new Material[SLOT_X.length];
     private BukkitTask countdownTask;
 
@@ -137,7 +138,7 @@ public class ColorGameManager {
         if (setters.contains(p.getUniqueId())) return;
         guessers.remove(p.getUniqueId());
         setters.add(p.getUniqueId());
-        giveSetterItems(p);
+        giveSetterPreview(p);
         p.showTitle(Title.title(
                 ChatUtils.toComponent("<gradient:#FF5500:#FF0000><b>🔧 PENENTU</b></gradient>"),
                 ChatUtils.toComponent("<gray>Susun blok jawabanmu di slot bawah!"),
@@ -178,25 +179,41 @@ public class ColorGameManager {
     /** @deprecated Use giveGuesserPreview or giveGuesserOrdered explicitly. */
     public void giveGuesserItems(Player p) { giveGuesserPreview(p); }
 
-    public void giveSetterItems(Player p) {
+    /**
+     * Preview: give all 7 colour blocks. Used when setter enters zone (IDLE).
+     * They need these to fill their answer slots.
+     */
+    public void giveSetterPreview(Player p) {
         p.getInventory().clear();
         for (Material mat : COLORS) p.getInventory().addItem(colorBlock(mat));
-        // Corrector papers — CMD 2551 (=1 correct) through 2557 (=7)
+    }
+
+    /**
+     * Ordered: place corrector papers (CMD 25561-25567) into hotbar slots 0-6.
+     * Called when game transitions to ACTIVE — setter no longer needs colour blocks,
+     * they now use papers to announce the score.
+     */
+    public void giveSetterOrdered(Player p) {
+        p.getInventory().clear();
         for (int i = 1; i <= 7; i++) {
             ItemStack paper = new ItemStack(Material.PAPER);
             ItemMeta meta = paper.getItemMeta();
             if (meta != null) {
-                meta.setCustomModelData(2550 + i);
+                meta.setCustomModelData(25560 + i); // 25561-25567
                 meta.displayName(ChatUtils.toComponent(
                         "<yellow><b>✅ " + i + " Blok Benar</b></yellow>"));
                 List<Component> lore = new ArrayList<>();
-                lore.add(ChatUtils.toComponent("<gray>Klik kiri/kanan untuk umumkan skor <white>" + i + "</white>!"));
+                lore.add(ChatUtils.toComponent(
+                        "<gray>Klik kiri/kanan untuk umumkan skor <white>" + i + "</white>!"));
                 meta.lore(lore);
                 paper.setItemMeta(meta);
             }
-            p.getInventory().addItem(paper);
+            p.getInventory().setItem(i - 1, paper); // slot 0-6
         }
     }
+
+    /** @deprecated Use giveSetterPreview or giveSetterOrdered explicitly. */
+    public void giveSetterItems(Player p) { giveSetterPreview(p); }
 
     public static ItemStack colorBlock(Material mat) {
         ItemStack item = new ItemStack(mat);
@@ -287,6 +304,12 @@ public class ColorGameManager {
             if (p != null) giveGuesserOrdered(p);
         }
 
+        // Give setters corrector papers now that answer slots are locked
+        for (UUID uid : setters) {
+            Player p = Bukkit.getPlayer(uid);
+            if (p != null) giveSetterOrdered(p);
+        }
+
         eachInWorld(p -> {
             p.showTitle(Title.title(
                     ChatUtils.toComponent("<gradient:#00FF80:#00AAFF><b>🎨 MULAI!</b></gradient>"),
@@ -301,7 +324,7 @@ public class ColorGameManager {
     }
 
     /**
-     * Called when a setter clicks a corrector paper (CMD 2551-2557).
+     * Called when a setter clicks a corrector paper (CMD 25561-25567).
      * Returns the announced score, or -1 if invalid context.
      */
     public int announcePaperScore(Player setter, int cmd) {
@@ -309,7 +332,7 @@ public class ColorGameManager {
         if (state != GameState.ACTIVE && state != GameState.SCORING) return -1;
         state = GameState.SCORING;
 
-        int score = cmd - 2550; // 2551 → 1
+        int score = cmd - 25560; // 25561 → 1
 
         // Build title based on score (max is 7)
         String titleStr;
@@ -383,7 +406,7 @@ public class ColorGameManager {
         // Re-give items to active players
         for (UUID uid : setters) {
             Player p = Bukkit.getPlayer(uid);
-            if (p != null) giveSetterItems(p);
+            if (p != null) giveSetterPreview(p);
         }
         for (UUID uid : guessers) {
             Player p = Bukkit.getPlayer(uid);
@@ -439,4 +462,15 @@ public class ColorGameManager {
     public ColorGameLeaderboard getLeaderboard() { return leaderboard; }
     public boolean isSetter(UUID uid)            { return setters.contains(uid); }
     public boolean isGuesser(UUID uid)           { return guessers.contains(uid); }
+    public boolean isAdminBypass(UUID uid)       { return adminBypass.contains(uid); }
+
+    /** Toggles admin bypass for world modification. Returns new state (true = enabled). */
+    public boolean toggleAdminBypass(UUID uid) {
+        if (adminBypass.contains(uid)) {
+            adminBypass.remove(uid);
+            return false;
+        }
+        adminBypass.add(uid);
+        return true;
+    }
 }

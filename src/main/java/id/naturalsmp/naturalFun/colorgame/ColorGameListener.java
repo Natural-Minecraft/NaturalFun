@@ -3,11 +3,15 @@ package id.naturalsmp.naturalFun.colorgame;
 import id.naturalsmp.naturalFun.NaturalFun;
 import id.naturalsmp.naturalFun.utils.ChatUtils;
 import org.bukkit.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -30,11 +34,9 @@ public class ColorGameListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onMove(PlayerMoveEvent e) {
-        // Only fire when the player actually changes block coordinates
         if (e.getFrom().getBlockX() == e.getTo().getBlockX()
          && e.getFrom().getBlockY() == e.getTo().getBlockY()
          && e.getFrom().getBlockZ() == e.getTo().getBlockZ()) return;
-
         evaluateZone(e.getPlayer(), e.getTo());
     }
 
@@ -43,10 +45,10 @@ public class ColorGameListener implements Listener {
         evaluateZone(e.getPlayer(), e.getTo());
     }
 
-    private void evaluateZone(org.bukkit.entity.Player p, Location to) {
+    private void evaluateZone(Player p, Location to) {
         if (to == null) return;
-        boolean inSetter  = manager.inSetterZone(to);
-        boolean inGuesser = manager.inGuesserZone(to);
+        boolean inSetter   = manager.inSetterZone(to);
+        boolean inGuesser  = manager.inGuesserZone(to);
         boolean wasSetter  = manager.isSetter(p.getUniqueId());
         boolean wasGuesser = manager.isGuesser(p.getUniqueId());
 
@@ -69,10 +71,13 @@ public class ColorGameListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent e) {
-        org.bukkit.entity.Player p = e.getPlayer();
+        Player p = e.getPlayer();
         Location loc = e.getBlock().getLocation();
 
-        if (!manager.inWorld(loc)) return; // only manage content world
+        if (!manager.inWorld(loc)) return;
+
+        // Admin bypass — full access
+        if (manager.isAdminBypass(p.getUniqueId())) return;
 
         boolean isSetter  = manager.isSetter(p.getUniqueId());
         boolean isGuesser = manager.isGuesser(p.getUniqueId());
@@ -80,13 +85,13 @@ public class ColorGameListener implements Listener {
         // Setter can break their own slots only while IDLE (to rearrange)
         if (isSetter && manager.isSetterSlot(loc)
                 && manager.getState() == ColorGameManager.GameState.IDLE) {
-            return; // allow
+            return;
         }
 
         // Guesser can break their own slots only while ACTIVE (to rearrange guess)
         if (isGuesser && manager.isGuesserSlot(loc)
                 && manager.getState() == ColorGameManager.GameState.ACTIVE) {
-            return; // allow
+            return;
         }
 
         e.setCancelled(true);
@@ -95,16 +100,19 @@ public class ColorGameListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlace(BlockPlaceEvent e) {
-        org.bukkit.entity.Player p = e.getPlayer();
+        Player p = e.getPlayer();
         Location loc = e.getBlock().getLocation();
 
         if (!manager.inWorld(loc)) return;
+
+        // Admin bypass — full access
+        if (manager.isAdminBypass(p.getUniqueId())) return;
 
         boolean isSetter  = manager.isSetter(p.getUniqueId());
         boolean isGuesser = manager.isGuesser(p.getUniqueId());
         Material placed   = e.getBlockPlaced().getType();
 
-        // ── Setter places in setter slots during IDLE ──────────────────────────
+        // ── Setter places colour blocks in setter slots during IDLE ───────────
         if (isSetter && manager.isSetterSlot(loc)) {
             if (manager.getState() != ColorGameManager.GameState.IDLE) {
                 e.setCancelled(true);
@@ -116,25 +124,41 @@ public class ColorGameListener implements Listener {
                 p.sendMessage(ChatUtils.toComponent("<red>Hanya blok warna yang bisa ditaruh di sini!"));
                 return;
             }
-            // Allow; schedule slot check 1 tick later (block is placed)
             Bukkit.getScheduler().runTaskLater(plugin, manager::checkSetterSlotsAndTrigger, 1L);
             return;
         }
 
-        // ── Guesser places in guesser slots during ACTIVE ─────────────────────
+        // ── Guesser places colour blocks in guesser slots during ACTIVE ───────
         if (isGuesser && manager.isGuesserSlot(loc)
                 && manager.getState() == ColorGameManager.GameState.ACTIVE) {
             if (!manager.isColorBlock(placed)) {
                 e.setCancelled(true);
                 p.sendMessage(ChatUtils.toComponent("<red>Hanya blok warna yang bisa ditaruh di sini!"));
             }
-            return; // allow colour blocks
+            return;
         }
 
-        // Anything else in the content world → cancel
+        // Anything else → cancel
         e.setCancelled(true);
         if (isSetter || isGuesser) {
             p.sendMessage(ChatUtils.toComponent("<red>✖ Letakkan blok di slot yang tersedia!"));
+        }
+    }
+
+    // ── Painting / Hanging Protection ─────────────────────────────────────────────
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onHangingBreak(HangingBreakByEntityEvent e) {
+        // Only protect content world
+        if (!e.getEntity().getWorld().getName().equals(manager.getWorldName())) return;
+
+        if (e.getRemover() instanceof Player p) {
+            if (manager.isAdminBypass(p.getUniqueId())) return; // admin can
+            e.setCancelled(true);
+            p.sendMessage(ChatUtils.toComponent("<red>✖ Kamu tidak bisa menghapus dekorasi di sini!"));
+        } else {
+            // Prevent any entity (e.g. explosions) from removing hangings
+            e.setCancelled(true);
         }
     }
 
@@ -142,10 +166,9 @@ public class ColorGameListener implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
-        // Fire only for main hand, and only left/right click
         if (e.getHand() != EquipmentSlot.HAND) return;
 
-        org.bukkit.entity.Player p = e.getPlayer();
+        Player p = e.getPlayer();
         if (!manager.isSetter(p.getUniqueId())) return;
 
         ItemStack item = p.getInventory().getItemInMainHand();
@@ -155,10 +178,12 @@ public class ColorGameListener implements Listener {
         if (meta == null || !meta.hasCustomModelData()) return;
 
         int cmd = meta.getCustomModelData();
-        if (cmd < 2551 || cmd > 2557) return;
+        // CMD range: 25561-25567
+        if (cmd < 25561 || cmd > 25567) return;
 
         e.setCancelled(true);
 
+        // Map CMD back: 25561→announce with score 1, etc.
         int score = manager.announcePaperScore(p, cmd);
         if (score < 0) {
             p.sendMessage(ChatUtils.toComponent("<red>Game belum aktif atau sudah selesai!"));
