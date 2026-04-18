@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.block.Action;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -143,6 +144,40 @@ public class ColorGameListener implements Listener {
         e.setCancelled(true);
         if (isSetter || isGuesser) {
             p.sendMessage(ChatUtils.toComponent("<red>✖ Letakkan blok di slot yang tersedia!"));
+        }
+    }
+
+    // ── Insta-Break Interaction ───────────────────────────────────────────────────
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onInstaBreak(PlayerInteractEvent e) {
+        if (e.getAction() != Action.LEFT_CLICK_BLOCK) return;
+        org.bukkit.block.Block b = e.getClickedBlock();
+        if (b == null) return;
+        
+        Player p = e.getPlayer();
+        Location loc = b.getLocation();
+        
+        if (!manager.inWorld(loc)) return;
+        if (manager.isAdminBypass(p.getUniqueId())) return; // Let admin bypass use normal breaking
+        
+        boolean isSetter  = manager.isSetter(p.getUniqueId());
+        boolean isGuesser = manager.isGuesser(p.getUniqueId());
+        
+        // Setter Insta-break
+        if (isSetter && manager.isSetterSlot(loc)
+                && manager.getState() == ColorGameManager.GameState.IDLE) {
+            b.setType(Material.AIR);
+            e.setCancelled(true);
+            return;
+        }
+
+        // Guesser Insta-break
+        if (isGuesser && manager.isGuesserSlot(loc)
+                && manager.getState() == ColorGameManager.GameState.ACTIVE) {
+            b.setType(Material.AIR);
+            e.setCancelled(true);
+            return;
         }
     }
 
