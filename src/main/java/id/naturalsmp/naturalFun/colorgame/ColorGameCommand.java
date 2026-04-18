@@ -28,28 +28,12 @@ public class ColorGameCommand implements CommandExecutor, TabCompleter {
 
         // ── /content ──────────────────────────────────────────────────────────────
         if (label.equalsIgnoreCase("content")) {
-            if (!(sender instanceof Player p)) {
-                sender.sendMessage("Only players can use this command.");
-                return true;
-            }
-            String worldName = manager.getWorldName();
-            World world = Bukkit.getWorld(worldName);
-            if (world == null) {
-                p.sendMessage(ChatUtils.toComponent(
-                        "<red>World '<white>" + worldName + "<red>' tidak ditemukan di server!"));
-                return true;
-            }
-            p.teleport(world.getSpawnLocation());
-            p.sendMessage(ChatUtils.toComponent(
-                    "<gradient:#00AAFF:#AA00FF><b>🎨 Selamat datang di Content World!</b></gradient>"
-                    + " <gray>Masuk ke zona untuk bergabung dengan game!"));
-            return true;
+            return teleportToContent(sender);
         }
 
         // ── /colorgame / /tebakwarna ──────────────────────────────────────────────
         if (args.length == 0) {
-            sendHelp(sender);
-            return true;
+            return teleportToContent(sender);
         }
 
         return switch (args[0].toLowerCase()) {
@@ -92,14 +76,37 @@ public class ColorGameCommand implements CommandExecutor, TabCompleter {
                 sendStatus(sender);
                 yield true;
             }
-            default -> {
+            case "help" -> {
                 sendHelp(sender);
+                yield true;
+            }
+            default -> {
+                teleportToContent(sender);
                 yield true;
             }
         };
     }
 
     // ── Sub-command helpers ───────────────────────────────────────────────────────
+
+    private boolean teleportToContent(CommandSender sender) {
+        if (!(sender instanceof Player p)) {
+            sender.sendMessage("Only players can use this command.");
+            return true;
+        }
+        String worldName = manager.getWorldName();
+        World world = Bukkit.getWorld(worldName);
+        if (world == null) {
+            p.sendMessage(ChatUtils.toComponent(
+                    "<red>World '<white>" + worldName + "<red>' tidak ditemukan di server!"));
+            return true;
+        }
+        p.teleport(world.getSpawnLocation());
+        p.sendMessage(ChatUtils.toComponent(
+                "<gradient:#00AAFF:#AA00FF><b>🎨 Selamat datang di Content World!</b></gradient>"
+                + " <gray>Masuk ke zona untuk bergabung dengan game!"));
+        return true;
+    }
 
     private void showLeaderboard(CommandSender sender) {
         List<ColorGameLeaderboard.Entry> top = manager.getLeaderboard().getTop(10);
@@ -157,7 +164,7 @@ public class ColorGameCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command cmd,
                                       String label, String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("leaderboard", "status", "reset", "admin");
+            return Arrays.asList("leaderboard", "status", "reset", "admin", "help");
         }
         return Collections.emptyList();
     }

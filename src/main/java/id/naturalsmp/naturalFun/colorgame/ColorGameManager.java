@@ -129,12 +129,12 @@ public class ColorGameManager {
             giveGuesserPreview(p);
         }
         p.showTitle(Title.title(
-                ChatUtils.toComponent("<gradient:#00AAFF:#AA00FF><b>🎨 PENEBAK</b></gradient>"),
+                ChatUtils.toComponent("<gradient:#00FFFF:#00AAFF><b>🎨 PENEBAK</b></gradient>"),
                 ChatUtils.toComponent("<gray>Tebak susunan warna bloknya!"),
                 Title.Times.times(Duration.ofMillis(300), Duration.ofMillis(2000), Duration.ofMillis(700))
         ));
         p.sendMessage(ChatUtils.toComponent(
-                "<gradient:#00AAFF:#AA00FF><b>🎨 Kamu adalah Penebak!</b></gradient>"
+                "<gradient:#00FFFF:#00AAFF><b>🎨 Kamu adalah Penebak!</b></gradient>"
                 + " <gray>Susun blok warna yang benar di slot atas!"));
     }
 
@@ -148,12 +148,12 @@ public class ColorGameManager {
             giveSetterPreview(p);
         }
         p.showTitle(Title.title(
-                ChatUtils.toComponent("<gradient:#FF5500:#FF0000><b>🔧 PENENTU</b></gradient>"),
+                ChatUtils.toComponent("<gradient:#FFFF00:#AAFF00><b>🔧 PENENTU</b></gradient>"),
                 ChatUtils.toComponent("<gray>Susun blok jawabanmu di slot bawah!"),
                 Title.Times.times(Duration.ofMillis(300), Duration.ofMillis(2000), Duration.ofMillis(700))
         ));
         p.sendMessage(ChatUtils.toComponent(
-                "<gradient:#FF5500:#FF0000><b>🔧 Kamu adalah Penentu!</b></gradient>"
+                "<gradient:#FFFF00:#AAFF00><b>🔧 Kamu adalah Penentu!</b></gradient>"
                 + " <gray>Susun jawabanmu, lalu klik kertas angka untuk beri skor!"));
     }
 
@@ -274,7 +274,7 @@ public class ColorGameManager {
         final int[] tick = {secs};
 
         broadcast(ChatUtils.toComponent(
-                "<gradient:#FF5500:#FFFF00><b>⏳ Game dimulai dalam " + secs + " detik!</b></gradient>"));
+                "<gradient:#FFFF00:#AAFF00><b>⏳ Game dimulai dalam " + secs + " detik!</b></gradient>"));
 
         countdownTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (tick[0] <= 0) {
@@ -286,7 +286,7 @@ public class ColorGameManager {
             int t = tick[0];
             eachInWorld(p -> {
                 p.showTitle(Title.title(
-                        ChatUtils.toComponent("<gradient:#FF5500:#FFFF00><b>" + t + "</b></gradient>"),
+                        ChatUtils.toComponent("<gradient:#FFFF00:#AAFF00><b>" + t + "</b></gradient>"),
                         ChatUtils.toComponent("<gray>Siapkan tebakanmu!"),
                         Title.Times.times(Duration.ZERO, Duration.ofMillis(900), Duration.ofMillis(100))
                 ));
@@ -320,14 +320,14 @@ public class ColorGameManager {
 
         eachInWorld(p -> {
             p.showTitle(Title.title(
-                    ChatUtils.toComponent("<gradient:#00FF80:#00AAFF><b>🎨 MULAI!</b></gradient>"),
+                    ChatUtils.toComponent("<gradient:#00FFFF:#00FF80><b>🎨 MULAI!</b></gradient>"),
                     ChatUtils.toComponent("<gray>Susun blok warnamu di slot atas!"),
                     Title.Times.times(Duration.ofMillis(200), Duration.ofMillis(2500), Duration.ofMillis(700))
             ));
             p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1.5f);
         });
         broadcast(ChatUtils.toComponent(
-                "<gradient:#00FF80:#00AAFF><b>🎨 GAME DIMULAI!</b></gradient>"
+                "<gradient:#00FFFF:#00FF80><b>🎨 GAME DIMULAI!</b></gradient>"
                 + " <gray>Penebak, susun blok warnamu sekarang!"));
     }
 
@@ -365,7 +365,7 @@ public class ColorGameManager {
         });
 
         broadcast(ChatUtils.toComponent(
-                "<gradient:#FFD700:#FFA500><b>📊 HASIL:</b></gradient>"
+                "<gradient:#FFFF00:#FFD700><b>📊 HASIL:</b></gradient>"
                 + " <white>" + score + "/7 blok benar!"
                 + " <gray>(diumumkan oleh " + setter.getName() + ")"));
 
