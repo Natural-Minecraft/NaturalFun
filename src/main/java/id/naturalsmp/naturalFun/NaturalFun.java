@@ -51,7 +51,7 @@ public final class NaturalFun extends JavaPlugin {
         BloodmoonShopManager shopManager = new BloodmoonShopManager(this);
         BloodmoonShopGUI shopGUI = new BloodmoonShopGUI(shopManager, currencyManager);
 
-        getServer().getPluginManager().registerEvents(new BloodmoonListener(this, bloodmoonManager, leaderboardManager),
+        getServer().getPluginManager().registerEvents(new BloodmoonListener(this, bloodmoonManager, leaderboardManager, currencyManager),
                 this);
         getServer().getPluginManager().registerEvents(shopGUI, this);
 

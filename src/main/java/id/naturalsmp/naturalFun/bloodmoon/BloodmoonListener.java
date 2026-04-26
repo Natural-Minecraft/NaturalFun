@@ -23,13 +23,20 @@ public class BloodmoonListener implements Listener {
     private final NaturalFun plugin;
     private final BloodmoonManager bloodmoonManager;
     private final LeaderboardManager leaderboardManager;
+    private final BloodmoonCurrencyManager currencyManager;
     private final Random random = new Random();
 
     public BloodmoonListener(NaturalFun plugin, BloodmoonManager bloodmoonManager,
-            LeaderboardManager leaderboardManager) {
+            LeaderboardManager leaderboardManager, BloodmoonCurrencyManager currencyManager) {
         this.plugin = plugin;
         this.bloodmoonManager = bloodmoonManager;
         this.leaderboardManager = leaderboardManager;
+        this.currencyManager = currencyManager;
+    }
+
+    @EventHandler
+    public void onPlayerJoin(org.bukkit.event.player.PlayerJoinEvent event) {
+        bloodmoonManager.addPlayerToBossBar(event.getPlayer());
     }
 
     @EventHandler
@@ -113,38 +120,21 @@ public class BloodmoonListener implements Listener {
             if (ws.customName() != null && ChatUtils.serialize(ws.customName()).contains(name)) {
                 double coinChance = plugin.getConfig().getDouble("bloodmoon.coins.chance", 1.0);
                 if (random.nextDouble() <= coinChance) {
-                    dropBloodmoonCoin(event);
+                    Player killer = ws.getKiller();
+                    if (killer != null) {
+                        int amount = plugin.getConfig().getInt("bloodmoon.coins.amount", 1);
+                        currencyManager.addBalance(killer.getUniqueId(), amount);
+                        
+                        String msg = bloodmoonManager.getMessages().getString("bloodmoon.coin-drop", 
+                                "<green>Kamu mendapatkan <yellow>%amount% Bloodmoon Coin<green>!");
+                        killer.sendMessage(ChatUtils.toComponent(msg.replace("%amount%", String.valueOf(amount))));
+                    }
                 }
 
                 if (ws.getKiller() != null) {
                     leaderboardManager.addKill(ws.getKiller());
                 }
             }
-        }
-    }
-
-    private void dropBloodmoonCoin(EntityDeathEvent event) {
-        String matName = plugin.getConfig().getString("bloodmoon.coins.material", "GOLD_NUGGET");
-        Material mat = Material.getMaterial(matName);
-        if (mat == null)
-            mat = Material.GOLD_NUGGET;
-
-        ItemStack coin = new ItemStack(mat);
-        ItemMeta meta = coin.getItemMeta();
-        String coinName = plugin.getConfig().getString("bloodmoon.coins.name", "Bloodmoon Coin");
-        meta.displayName(ChatUtils.toComponent(coinName));
-
-        int cmd = plugin.getConfig().getInt("bloodmoon.coins.custom-model-data", 0);
-        if (cmd > 0)
-            meta.setCustomModelData(cmd);
-
-        coin.setItemMeta(meta);
-
-        event.getDrops().add(coin);
-        if (event.getEntity().getKiller() != null) {
-            String msg = bloodmoonManager.getMessages().getString("bloodmoon.coin-drop");
-            if (msg != null)
-                event.getEntity().getKiller().sendMessage(ChatUtils.toComponent(msg));
         }
     }
 

@@ -236,7 +236,7 @@ public class BloodmoonShopGUI implements Listener {
 
         @Override
         public @NotNull Inventory getInventory() {
-            return null;
+            return Bukkit.createInventory(this, 54);
         }
     }
 }
