@@ -224,7 +224,7 @@ public class ColorGameManager {
     public void giveSetterItems(Player p) { giveSetterPreview(p); }
 
     public static ItemStack colorBlock(Material mat) {
-        ItemStack item = new ItemStack(mat);
+        ItemStack item = new ItemStack(mat, 64);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.displayName(ChatUtils.toComponent("<white><b>" + colorName(mat) + "</b></white>"));
