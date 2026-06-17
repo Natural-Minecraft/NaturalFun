@@ -117,7 +117,18 @@ public final class NaturalFun extends JavaPlugin {
             }, this);
         }
 
-        getLogger().info("NaturalFun has been enabled with all features!");
+        org.bukkit.Bukkit.getConsoleSender().sendMessage(
+                org.bukkit.ChatColor.translateAlternateColorCodes('&',
+                    "\n&a===============\n" +
+                    "&a _   _       _                  _     &e _____            \n" +
+                    "&a| \ | | __ _| |_ _   _ _ __ __ _| |   &e|  ___|   _ _ __  \n" +
+                    "&a|  \| |/ _` | __| | | | '__/ _` | |   &e| |_ | | | | '_ \ \n" +
+                    "&a| |\  | (_| | |_| |_| | | | (_| | |   &e|  _|| |_| | | | |\n" +
+                    "&a|_| \_|\__,_|\__|\__,_|_|  \__,_|_|   &e|_|   \__,_|_| |_|\n" +
+                    "       >> &eNaturalFun v" + getDescription().getVersion() + " Enabled! <<\n" +
+                    "&a===============\n"
+                )
+        );
     }
 
     @Override
