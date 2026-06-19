@@ -42,7 +42,9 @@ public class BloodmoonManager {
         autoCheckTask = new BukkitRunnable() {
             @Override
             public void run() {
+                if (!plugin.getConfig().getBoolean("bloodmoon.enabled", true)) return;
                 if (isBloodmoonActive) return;
+
 
                 int chance = plugin.getConfig().getInt("bloodmoon.chance-percent", 5);
 

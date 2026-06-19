@@ -1,7 +1,8 @@
 bloodmoon:
+  enabled: false # Set to true to enable Bloodmoons automatically
   interval: 10 # Days between Bloodmoons
   mob-damage-multiplier: 3.0
-  
+
   blocked-commands:
     - "/home"
     - "/spawn"
